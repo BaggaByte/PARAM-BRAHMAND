@@ -1,0 +1,193 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Syne", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-background: #09090b;
+  --color-foreground: #e8e6e1;
+  --color-card: #121214;
+  --color-card-foreground: #e8e6e1;
+  --color-popover: #161618;
+  --color-popover-foreground: #e8e6e1;
+  --color-primary: #d8d4cc;
+  --color-primary-foreground: #09090b;
+  --color-secondary: #1a1a1e;
+  --color-secondary-foreground: #e8e6e1;
+  --color-muted: #1a1a1e;
+  --color-muted-foreground: #8a8880;
+  --color-accent: #1c1e1c;
+  --color-accent-foreground: #e8e6e1;
+  --color-destructive: #c45c4a;
+  --color-destructive-foreground: #f4eeea;
+  --color-border: #26262b;
+  --color-input: #2a2a30;
+  --color-ring: #d8d4cc;
+  --color-water: #5b9aa0;
+  --color-veg: #6b8f71;
+  --color-hazard: #c45c4a;
+  --color-radar: #7d8894;
+  --color-sage: #7a9e8a;
+  --color-paper: #e8e6e1;
+  --color-ink: #09090b;
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius: 8px;
+
+  --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  html,
+  body,
+  #app {
+    min-height: 100dvh;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  * {
+    border-color: var(--color-border);
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-sage) 40%, transparent);
+    color: var(--color-foreground);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Leaflet restyle — instrument chrome, not default GIS blue */
+.leaflet-container {
+  background: #0c0c0e;
+  font-family: var(--font-sans);
+  color: var(--color-foreground);
+}
+
+.leaflet-control-zoom a {
+  background: var(--color-card) !important;
+  color: var(--color-foreground) !important;
+  border-bottom-color: var(--color-border) !important;
+  width: 32px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+}
+
+.leaflet-bar {
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-sm) !important;
+  overflow: hidden;
+  box-shadow: none !important;
+}
+
+.leaflet-control-attribution {
+  background: color-mix(in oklab, var(--color-background) 78%, transparent) !important;
+  color: var(--color-muted-foreground) !important;
+  font-size: 10px !important;
+  font-family: var(--font-mono);
+  max-width: min(70vw, 28rem);
+}
+
+.leaflet-control-attribution a {
+  color: var(--color-sage) !important;
+}
+
+.leaflet-pane svg.leaflet-zoom-animated {
+  overflow: visible;
+}
+
+.sar-tiles {
+  filter: grayscale(1) contrast(1.35) brightness(0.82) saturate(0.4);
+}
+
+.sar-pauli-tiles {
+  filter: contrast(1.5) saturate(2.2) hue-rotate(180deg) brightness(0.92);
+}
+
+.dem-tiles {
+  filter: grayscale(0.4) contrast(1.15) sepia(0.15) brightness(0.9);
+}
+
+.pb-boot-row {
+  opacity: 0;
+  transform: translateY(8px);
+  animation: pb-rise 400ms var(--ease-smooth-out) forwards;
+}
+
+@keyframes pb-rise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pb-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.pb-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in oklab, var(--color-foreground) 14%, transparent) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: pb-shimmer 1.4s linear infinite;
+}
+
+.pb-pip {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-sage) 18%, transparent);
+}
+
+.leaflet-div-icon.mission-pin {
+  background: transparent;
+  border: none;
+}
