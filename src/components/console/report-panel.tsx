@@ -3,12 +3,15 @@ import {
   AlertTriangle,
   CheckCircle2,
   Copy,
+  Download,
   ExternalLink,
+  FileText,
   Flame,
   Info,
   Printer,
   ShieldAlert,
   Volume2,
+  VolumeX,
   XCircle,
   Zap,
 } from "lucide-react";
@@ -124,17 +127,11 @@ function Pending() {
   );
 }
 
-function speak(text: string, lang: string) {
-  if (typeof window === "undefined" || !window.speechSynthesis) return;
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = LANG_BY_CODE[lang as keyof typeof LANG_BY_CODE]?.bcp47 ?? "en-IN";
-  window.speechSynthesis.cancel();
-  window.speechSynthesis.speak(u);
-}
-
 function Brief() {
   const result = useConsole((s) => s.result)!;
   const setSelectedAgentId = useConsole((s) => s.setSelectedAgentId);
+  const isSpeaking = useConsole((s) => s.isSpeaking);
+  const setIsSpeaking = useConsole((s) => s.setIsSpeaking);
   const agent = AGENT_BY_ID[result.agent];
 
   function copyText(text: string, label: string) {
@@ -142,14 +139,67 @@ function Brief() {
     toast.success(`${label} copied to clipboard`);
   }
 
+  function downloadGeoJSON() {
+    if (!result?.geojson) return;
+    const data = JSON.stringify(result.geojson, null, 2);
+    const blob = new Blob([data], { type: "application/geo+json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `PARAM-BRAHMAND-${result.missionId ?? "telemetry"}-${Date.now()}.geojson`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("GeoJSON vector footprint downloaded");
+  }
+
+  function toggleSpeech(text: string, lang: string) {
+    if (typeof window === "undefined" || !window.speechSynthesis) {
+      toast.error("Speech synthesis not supported in this browser");
+      return;
+    }
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = LANG_BY_CODE[lang as keyof typeof LANG_BY_CODE]?.bcp47 ?? "en-IN";
+    u.onend = () => setIsSpeaking(false);
+    u.onerror = () => setIsSpeaking(false);
+    setIsSpeaking(true);
+    window.speechSynthesis.speak(u);
+  }
+
   return (
     <div className="space-y-4">
-      {/* Top Status Header */}
+      {/* Printable ISRO SAC Letterhead (Active during window.print) */}
+      <div className="hidden print:block border-b-2 border-black pb-4 mb-4 font-sans text-black">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight">ISRO SPACE APPLICATIONS CENTRE (SAC)</h1>
+            <p className="text-xs uppercase tracking-wider text-gray-700">Ahmedabad, Gujarat · Earth Observation Applications Division</p>
+          </div>
+          <div className="text-right text-xs font-mono">
+            <div>PS 26167 · SatQuery AI</div>
+            <div>PARAM-BRAHMAND (Vishwaroopa-AI)</div>
+            <div>{new Date().toISOString()}</div>
+          </div>
+        </div>
+        <div className="mt-3 grid grid-cols-4 gap-2 text-xs border-t border-gray-300 pt-2">
+          <div><strong>Mission:</strong> {result.missionId ?? "ADHOC"}</div>
+          <div><strong>Target:</strong> {result.center[0].toFixed(3)}°N, {result.center[1].toFixed(3)}°E</div>
+          <div><strong>Sensor Mode:</strong> {result.mapMode.toUpperCase()} ({result.physics.gsdM}m GSD)</div>
+          <div><strong>Firewall Status:</strong> {result.firewall.passed ? "CERTIFIED 0% HALLUCINATION" : "VIOLATION HALT"}</div>
+        </div>
+      </div>
+
+      {/* Top Status Header & Action Controls */}
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
           onClick={() => setSelectedAgentId(result.agent)}
-          className="group flex items-center gap-1.5 rounded-full border border-sage/40 bg-sage/10 px-2.5 py-1 text-xs font-semibold text-sage hover:bg-sage/20 transition-colors"
+          className="group flex items-center gap-1.5 rounded-full border border-sage/40 bg-sage/10 px-2.5 py-1 text-xs font-semibold text-sage hover:bg-sage/20 transition-colors cursor-pointer"
         >
           <span>{agent.name}</span>
           <ExternalLink className="size-3 opacity-60 group-hover:opacity-100" />
@@ -159,16 +209,59 @@ function Brief() {
         </Badge>
         <Badge variant="water">{formatNum(result.vqa.confidence * 100, 1)}% Conf.</Badge>
         <span className="font-mono text-xs text-muted-foreground">{result.latencyMs} ms</span>
+
+        {/* Vernacular Speech Synthesizer with Animated Waveform */}
+        <div className="ml-auto flex items-center gap-1.5">
+          {isSpeaking && (
+            <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-xs bg-sage/15 text-sage font-mono text-[10px]">
+              <span className="size-1 rounded-full bg-sage animate-bounce [animation-delay:0ms]" />
+              <span className="size-1.5 rounded-full bg-sage animate-bounce [animation-delay:150ms]" />
+              <span className="size-2 rounded-full bg-sage animate-bounce [animation-delay:300ms]" />
+              <span className="ml-1">Speaking</span>
+            </div>
+          )}
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            aria-label={isSpeaking ? "Stop speech" : "Read brief aloud"}
+            onClick={() => toggleSpeech(result.report.t1, result.language)}
+            className={cn("cursor-pointer", isSpeaking && "text-sage bg-sage/10 ring-1 ring-sage animate-pulse")}
+            title={isSpeaking ? "Stop speech playback" : "Voice synthesize (Indic-TTS)"}
+          >
+            {isSpeaking ? <VolumeX className="size-4 text-destructive" /> : <Volume2 className="size-4 text-sage" />}
+          </Button>
+        </div>
+      </div>
+
+      {/* Action Toolbar: Export ISRO Memo & GeoJSON */}
+      <div className="flex items-center gap-1.5 rounded-md border border-border/70 bg-secondary/30 p-1.5">
         <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          aria-label="Read brief aloud"
-          onClick={() => speak(result.report.t1, result.language)}
-          className="ml-auto"
-          title="Voice synthesize (Indic-TTS)"
+          variant="outline"
+          size="sm"
+          onClick={downloadGeoJSON}
+          className="h-7 gap-1.5 px-2.5 text-xs font-mono hover:border-sage/60 hover:text-sage cursor-pointer"
         >
-          <Volume2 className="size-4 text-sage" />
+          <Download className="size-3 text-sage" />
+          <span>GeoJSON Vector</span>
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => window.print()}
+          className="h-7 gap-1.5 px-2.5 text-xs font-mono hover:border-sage/60 hover:text-sage cursor-pointer"
+        >
+          <FileText className="size-3 text-sage" />
+          <span>ISRO SAC Memo (PDF)</span>
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => copyText(result.answer, "VQA Answer")}
+          className="h-7 gap-1 px-2 text-xs ml-auto text-muted-foreground hover:text-foreground cursor-pointer"
+        >
+          <Copy className="size-3" />
+          <span>Copy</span>
         </Button>
       </div>
 

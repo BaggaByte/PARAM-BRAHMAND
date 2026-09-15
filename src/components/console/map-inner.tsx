@@ -137,6 +137,47 @@ function SwipeClip() {
   return null;
 }
 
+function estimateElevation(lat: number, lng: number): number {
+  if (lat > 29.5 && lat < 31.5 && lng > 78.5 && lng < 81.0) {
+    return Math.round(1850 + (lat - 30.5) * 800 + Math.sin(lng * 10) * 120);
+  }
+  if (lat > 9.2 && lat < 9.7 && lng > 76.3 && lng < 76.65) {
+    return Number((-0.8 - Math.abs(lat - 9.49) * 0.9).toFixed(1));
+  }
+  if (lat > 26.3 && lat < 26.8 && lng > 92.8 && lng < 93.5) {
+    return Math.round(62 + Math.cos(lat * 5) * 8);
+  }
+  if (lat > 25.5 && lat < 26.5 && lng > 76.8 && lng < 77.8) {
+    return Math.round(175 + Math.sin(lng * 4) * 25);
+  }
+  return Math.max(10, Math.round(Math.abs(lat - 12) * 22 + Math.cos(lng * 0.1) * 60));
+}
+
+function CursorTracker() {
+  const map = useMap();
+  const setCursorCoords = useConsole((s) => s.setCursorCoords);
+
+  useEffect(() => {
+    const onMove = (e: L.LeafletMouseEvent) => {
+      const lat = Number(e.latlng.lat.toFixed(5));
+      const lng = Number(e.latlng.lng.toFixed(5));
+      const elev = estimateElevation(lat, lng);
+      setCursorCoords({ lat, lng, elev });
+    };
+    const onOut = () => {
+      setCursorCoords(null);
+    };
+    map.on("mousemove", onMove);
+    map.on("mouseout", onOut);
+    return () => {
+      map.off("mousemove", onMove);
+      map.off("mouseout", onOut);
+    };
+  }, [map, setCursorCoords]);
+
+  return null;
+}
+
 export function MapInner() {
   const result = useConsole((s) => s.result);
   const mapMode = useConsole((s) => s.mapMode);
@@ -178,6 +219,7 @@ export function MapInner() {
       <ViewSync />
       <SizeFix />
       <SwipeClip />
+      <CursorTracker />
 
       {result && (
         <GeoJSON

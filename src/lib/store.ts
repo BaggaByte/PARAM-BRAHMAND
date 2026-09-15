@@ -48,6 +48,10 @@ interface ConsoleState {
   center: [number, number];
   zoom: number;
   setView: (center: [number, number], zoom: number) => void;
+  cursorCoords: { lat: number; lng: number; elev: number } | null;
+  setCursorCoords: (coords: { lat: number; lng: number; elev: number } | null) => void;
+  isSpeaking: boolean;
+  setIsSpeaking: (v: boolean) => void;
   submit: (text?: string, violationOverride?: PhysicsViolationType) => Promise<void>;
   loadMission: (id: MissionId) => Promise<void>;
   reset: () => void;
@@ -88,6 +92,10 @@ export const useConsole = create<ConsoleState>((set, get) => ({
   center: INDIA,
   zoom: 5,
   setView: (center, zoom) => set({ center, zoom }),
+  cursorCoords: null,
+  setCursorCoords: (coords) => set({ cursorCoords: coords }),
+  isSpeaking: false,
+  setIsSpeaking: (v) => set({ isSpeaking: v }),
   reset: () =>
     set({
       result: null,
@@ -101,6 +109,8 @@ export const useConsole = create<ConsoleState>((set, get) => ({
       sarDisplayMode: "intensity",
       physicsViolation: "none",
       query: "",
+      cursorCoords: null,
+      isSpeaking: false,
     }),
   submit: async (text, violationOverride) => {
     const q = (text ?? get().query).trim();

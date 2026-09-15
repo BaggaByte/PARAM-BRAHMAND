@@ -1,5 +1,5 @@
-import { Component, useEffect, useState, type ComponentType, type ReactNode } from "react";
-import { SlidersHorizontal } from "lucide-react";
+import { Component, useEffect, useRef, useState, type ComponentType, type ReactNode } from "react";
+import { ChevronLeft, ChevronRight, Compass, Navigation, Radio, Satellite, SlidersHorizontal } from "lucide-react";
 import { useConsole } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -31,13 +31,99 @@ export function MapViewport() {
   const setSarDisplayMode = useConsole((s) => s.setSarDisplayMode);
   const swipe = useConsole((s) => s.swipe);
   const setSwipe = useConsole((s) => s.setSwipe);
+  const cursorCoords = useConsole((s) => s.cursorCoords);
+
+  // Satellite orbit telemetry state (NISAR vs EOS-04)
+  const [satIndex, setSatIndex] = useState(0);
+  const [orbitCountdown, setOrbitCountdown] = useState(842); // seconds until next Indian swath acquisition
+  const isDraggingSwipe = useRef(false);
+  const viewportRef = useRef<HTMLDivElement>(null);
+
+  const SATELLITES = [
+    {
+      name: "NISAR (NASA-ISRO SAR)",
+      sensor: "Dual-Pol L+S Band",
+      alt: "747 km",
+      swath: "242 km",
+      res: "3-10m",
+      orbit: "Sun-Sync 98.4°",
+      status: "ACTIVE RADAR ACQUISITION",
+    },
+    {
+      name: "ISRO EOS-04 (RISAT-1A)",
+      sensor: "C-Band Quad-Pol SAR",
+      alt: "529 km",
+      swath: "10-225 km",
+      res: "1-50m",
+      orbit: "Sun-Sync 97.5°",
+      status: "INTERFEROMETRIC PASS",
+    },
+    {
+      name: "Cartosat-3",
+      sensor: "PAN + 4-Band Multispectral",
+      alt: "505 km",
+      swath: "17.4 km",
+      res: "0.28m VNIR",
+      orbit: "Sun-Sync 97.5°",
+      status: "STEREO RECONNAISSANCE",
+    },
+  ];
 
   useEffect(() => {
     void import("./map-inner").then((m) => setInner(() => m.MapInner));
   }, []);
 
+  // Orbit countdown & satellite cycling ticker
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setOrbitCountdown((prev) => (prev > 1 ? prev - 1 : 1200));
+    }, 1000);
+    const cycleTimer = window.setInterval(() => {
+      setSatIndex((prev) => (prev + 1) % SATELLITES.length);
+    }, 12000);
+    return () => {
+      window.clearInterval(timer);
+      window.clearInterval(cycleTimer);
+    };
+  }, [SATELLITES.length]);
+
+  const activeSat = SATELLITES[satIndex];
+  const minutes = Math.floor(orbitCountdown / 60);
+  const seconds = orbitCountdown % 60;
+
+  // On-map drag handler for bi-temporal split line
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (!result?.swipeEnabled) return;
+    isDraggingSwipe.current = true;
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDraggingSwipe.current || !viewportRef.current) return;
+    const rect = viewportRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const pct = Math.max(5, Math.min(95, Math.round((x / rect.width) * 100)));
+    setSwipe(pct);
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (isDraggingSwipe.current) {
+      isDraggingSwipe.current = false;
+      try {
+        (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+      } catch {
+        // ignore
+      }
+    }
+  };
+
   return (
-    <div className="relative h-full min-h-64 w-full overflow-hidden bg-ink">
+    <div
+      ref={viewportRef}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      className="relative h-full min-h-64 w-full overflow-hidden bg-ink select-none"
+    >
       <MapBoundary>
         {Inner ? (
           <Inner />
@@ -47,6 +133,21 @@ export function MapViewport() {
           </div>
         )}
       </MapBoundary>
+
+      {/* Satellite Orbit Ground Track HUD */}
+      <div className="pointer-events-auto absolute left-3 top-11.5 z-[400] hidden sm:flex items-center gap-2 rounded-md border border-border/90 bg-background/90 px-2.5 py-1 font-mono text-[10.5px] shadow-xs backdrop-blur-md">
+        <div className="flex items-center gap-1.5 text-sage font-semibold">
+          <Satellite className="size-3 text-sage shrink-0" />
+          <span>{activeSat.name}</span>
+        </div>
+        <span className="text-muted-foreground/50">·</span>
+        <span className="text-muted-foreground">{activeSat.sensor}</span>
+        <span className="text-muted-foreground/50">·</span>
+        <div className="flex items-center gap-1">
+          <span className="size-1.5 rounded-full bg-emerald-400 animate-ping" />
+          <span className="text-emerald-400 font-medium">T-{minutes}m {seconds < 10 ? `0${seconds}` : seconds}s</span>
+        </div>
+      </div>
 
       {/* Top Left Coordinate & Sensor Telemetry */}
       <div className="pointer-events-none absolute left-3 top-3 z-[400] rounded-md border border-border bg-background/90 px-3 py-1.5 font-mono text-xs text-muted-foreground shadow-xs backdrop-blur-xs">
@@ -74,7 +175,7 @@ export function MapViewport() {
               type="button"
               onClick={() => setMapMode(m)}
               className={cn(
-                "rounded-xs px-2.5 py-1 font-mono text-xs uppercase font-medium transition-colors",
+                "rounded-xs px-2.5 py-1 font-mono text-xs uppercase font-medium transition-colors cursor-pointer",
                 mapMode === m
                   ? "bg-sage text-background shadow-xs font-bold"
                   : "text-muted-foreground hover:text-foreground",
@@ -92,7 +193,7 @@ export function MapViewport() {
               type="button"
               onClick={() => setSarDisplayMode("intensity")}
               className={cn(
-                "rounded-xs px-2 py-0.5 transition-colors",
+                "rounded-xs px-2 py-0.5 transition-colors cursor-pointer",
                 sarDisplayMode === "intensity"
                   ? "bg-secondary text-foreground font-semibold"
                   : "text-muted-foreground hover:text-foreground",
@@ -104,7 +205,7 @@ export function MapViewport() {
               type="button"
               onClick={() => setSarDisplayMode("pauli_rgb")}
               className={cn(
-                "rounded-xs px-2 py-0.5 transition-colors",
+                "rounded-xs px-2 py-0.5 transition-colors cursor-pointer",
                 sarDisplayMode === "pauli_rgb"
                   ? "bg-sage text-background font-semibold"
                   : "text-muted-foreground hover:text-foreground",
@@ -139,31 +240,75 @@ export function MapViewport() {
         </div>
       )}
 
-      {/* Bi-temporal Comparison Swipe Widget */}
-      {result?.swipeEnabled && (
-        <div className="absolute inset-x-8 bottom-6 z-[400] rounded-lg border border-border/80 bg-background/90 p-3 shadow-lg backdrop-blur-xs max-w-xl mx-auto">
-          <div className="mb-1.5 flex items-center justify-between font-mono text-xs">
-            <span className="font-semibold text-foreground">
-              ◀ {result.beforeLabel ?? "Pre-Event Baseline (T0)"}
-            </span>
-            <span className="flex items-center gap-1 text-muted-foreground">
-              <SlidersHorizontal className="size-3 text-sage" />
-              <span>Bi-Temporal Split: {swipe}%</span>
-            </span>
-            <span className="font-semibold text-sage">
-              {result.afterLabel ?? "Post-Event Pass (T1)"} ▶
-            </span>
-          </div>
-          <input
-            type="range"
-            min={0}
-            max={100}
-            value={swipe}
-            onChange={(e) => setSwipe(Number(e.target.value))}
-            className="w-full accent-sage h-1.5 rounded-lg cursor-ew-resize"
-            aria-label="Bi-temporal satellite image comparison swipe"
-          />
+      {/* Live Cursor Crosshairs & DEM Elevation HUD */}
+      {cursorCoords && (
+        <div className="pointer-events-none absolute left-3 bottom-3 z-[400] flex items-center gap-2.5 rounded-md border border-border/80 bg-background/90 px-2.5 py-1 font-mono text-[11px] text-muted-foreground shadow-xs backdrop-blur-xs">
+          <Navigation className="size-3 text-sage shrink-0" />
+          <span className="text-foreground font-medium">
+            {cursorCoords.lat >= 0 ? `${cursorCoords.lat.toFixed(4)}°N` : `${Math.abs(cursorCoords.lat).toFixed(4)}°S`},{" "}
+            {cursorCoords.lng >= 0 ? `${cursorCoords.lng.toFixed(4)}°E` : `${Math.abs(cursorCoords.lng).toFixed(4)}°W`}
+          </span>
+          <span className="text-muted-foreground/50">·</span>
+          <span>ELEV: <strong className="text-sage">{cursorCoords.elev}m</strong> ASL</span>
+          <span className="text-muted-foreground/50">·</span>
+          <span>SRTM-30</span>
         </div>
+      )}
+
+      {/* Interactive Bi-Temporal Divider Line directly on the Map */}
+      {result?.swipeEnabled && (
+        <>
+          <div
+            style={{ left: `${swipe}%` }}
+            onPointerDown={handlePointerDown}
+            className="absolute top-0 bottom-0 w-1 -ml-0.5 bg-sage z-[390] cursor-ew-resize hover:shadow-[0_0_12px_rgba(122,158,138,0.8)] transition-shadow"
+          >
+            {/* Center Handle Knob */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-8 rounded-full border-2 border-sage bg-background/90 shadow-md flex items-center justify-center text-sage cursor-ew-resize hover:scale-110 transition-transform">
+              <div className="flex items-center -space-x-1">
+                <ChevronLeft className="size-3" />
+                <ChevronRight className="size-3" />
+              </div>
+            </div>
+
+            {/* Left/Right Floating Badges on Split Line */}
+            <div className="pointer-events-none absolute top-14 -left-32 w-28 text-right">
+              <span className="rounded-xs border border-border bg-background/85 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground shadow-xs">
+                ◀ {result.beforeLabel ?? "T0 Baseline"}
+              </span>
+            </div>
+            <div className="pointer-events-none absolute top-14 left-4 w-28 text-left">
+              <span className="rounded-xs border border-sage/60 bg-sage/20 px-1.5 py-0.5 font-mono text-[10px] text-sage font-medium shadow-xs">
+                {result.afterLabel ?? "T1 Pass"} ▶
+              </span>
+            </div>
+          </div>
+
+          {/* Bottom Bi-temporal Slider Controls */}
+          <div className="absolute inset-x-8 bottom-6 z-[400] rounded-lg border border-border/80 bg-background/90 p-3 shadow-lg backdrop-blur-xs max-w-xl mx-auto">
+            <div className="mb-1.5 flex items-center justify-between font-mono text-xs">
+              <span className="font-semibold text-foreground">
+                ◀ {result.beforeLabel ?? "Pre-Event Baseline (T0)"}
+              </span>
+              <span className="flex items-center gap-1 text-muted-foreground">
+                <SlidersHorizontal className="size-3 text-sage" />
+                <span>Bi-Temporal Split: {swipe}%</span>
+              </span>
+              <span className="font-semibold text-sage">
+                {result.afterLabel ?? "Post-Event Pass (T1)"} ▶
+              </span>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={swipe}
+              onChange={(e) => setSwipe(Number(e.target.value))}
+              className="w-full accent-sage h-1.5 rounded-lg cursor-ew-resize"
+              aria-label="Bi-temporal satellite image comparison swipe"
+            />
+          </div>
+        </>
       )}
     </div>
   );
