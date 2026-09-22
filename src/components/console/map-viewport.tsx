@@ -261,10 +261,20 @@ export function MapViewport() {
           <div
             style={{ left: `${swipe}%` }}
             onPointerDown={handlePointerDown}
-            className="absolute top-0 bottom-0 w-1 -ml-0.5 bg-sage z-[390] cursor-ew-resize hover:shadow-[0_0_12px_rgba(122,158,138,0.8)] transition-shadow"
+            className="absolute top-0 bottom-0 w-0.5 -ml-px bg-sage/70 z-[390] cursor-ew-resize"
           >
+            {/* Gradient vignettes flanking the divider for soft fade */}
+            <div
+              className="swipe-vignette-left pointer-events-none"
+              style={{ right: "100%", left: "auto" }}
+            />
+            <div
+              className="swipe-vignette-right pointer-events-none"
+              style={{ left: "100%" }}
+            />
+
             {/* Center Handle Knob */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-8 rounded-full border-2 border-sage bg-background/90 shadow-md flex items-center justify-center text-sage cursor-ew-resize hover:scale-110 transition-transform">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-9 rounded-full border-2 border-sage bg-background/95 shadow-lg shadow-sage/20 flex items-center justify-center text-sage cursor-ew-resize hover:scale-110 hover:shadow-sage/40 transition-all duration-150">
               <div className="flex items-center -space-x-1">
                 <ChevronLeft className="size-3" />
                 <ChevronRight className="size-3" />

@@ -191,3 +191,128 @@
   background: transparent;
   border: none;
 }
+
+/* ── Mission pin pulse animations ────────────────────────────────────── */
+@keyframes pb-pin-pulse {
+  0%   { box-shadow: 0 0 0 0px currentColor; opacity: 0.9; }
+  70%  { box-shadow: 0 0 0 10px transparent; opacity: 0.7; }
+  100% { box-shadow: 0 0 0 0px transparent; opacity: 0.9; }
+}
+
+.mission-pin-inner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  animation: pb-pin-pulse 2.4s ease-out infinite;
+  position: relative;
+}
+
+.mission-pin-inner::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.85;
+}
+
+/* ── SAR scanline overlay ─────────────────────────────────────────────── */
+.sar-tiles,
+.sar-pauli-tiles {
+  position: relative;
+}
+
+.sar-scanline-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 300;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(122, 158, 138, 0.035) 3px,
+    rgba(122, 158, 138, 0.035) 4px
+  );
+  animation: sar-scan-move 12s linear infinite;
+  mix-blend-mode: screen;
+}
+
+@keyframes sar-scan-move {
+  from { background-position: 0 0; }
+  to   { background-position: 0 400px; }
+}
+
+/* ── Boot screen progress bar ─────────────────────────────────────────── */
+@keyframes boot-fill {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
+.pb-boot-progress-bar {
+  height: 2px;
+  background: var(--color-sage);
+  border-radius: 999px;
+  width: 0%;
+  animation: boot-fill 2s linear forwards;
+  box-shadow: 0 0 8px color-mix(in oklab, var(--color-sage) 60%, transparent);
+}
+
+/* ── Swipe divider gradient vignette ──────────────────────────────────── */
+.swipe-vignette-left {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 32px;
+  background: linear-gradient(
+    to left,
+    transparent,
+    color-mix(in oklab, var(--color-background) 22%, transparent)
+  );
+  pointer-events: none;
+}
+
+.swipe-vignette-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 32px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    color-mix(in oklab, var(--color-sage) 8%, transparent)
+  );
+  pointer-events: none;
+}
+
+/* ── Mission dock category dot pulse ──────────────────────────────────── */
+@keyframes pb-dot-glow {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+
+.mission-cat-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: pb-dot-glow 2.5s ease-in-out infinite;
+}
+
+/* ── Print / PDF export styles ────────────────────────────────────────── */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+}

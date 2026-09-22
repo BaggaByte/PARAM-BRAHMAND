@@ -108,7 +108,11 @@ export function BootScreen() {
             </li>
           ))}
         </ul>
-        <p className="mt-10 text-xs text-muted-foreground">Skip</p>
+        {/* Animated progress bar */}
+        <div className="mt-8 h-px w-full rounded-full overflow-hidden bg-border">
+          <div className="pb-boot-progress-bar" />
+        </div>
+        <p className="mt-4 text-xs text-muted-foreground">Tap anywhere to skip</p>
       </div>
     </button>
   );

@@ -103,12 +103,26 @@ export function ReportPanel() {
         className="flex min-h-0 flex-1 flex-col"
       >
         <div className="px-3 pt-3">
-          <TabsList className="w-full justify-start overflow-x-auto">
-            <TabsTrigger value="report">Brief &amp; SOP</TabsTrigger>
-            <TabsTrigger value="trace">Trace ({result?.trace.length ?? liveTrace.length})</TabsTrigger>
-            <TabsTrigger value="manifold">128-D Manifold</TabsTrigger>
-            <TabsTrigger value="firewall">Dharma Firewall</TabsTrigger>
-          </TabsList>
+          <div className="mb-2 flex items-center gap-2">
+            <TabsList className="flex-1 justify-start overflow-x-auto">
+              <TabsTrigger value="report">Brief &amp; SOP</TabsTrigger>
+              <TabsTrigger value="trace">Trace ({result?.trace.length ?? liveTrace.length})</TabsTrigger>
+              <TabsTrigger value="manifold">128-D Manifold</TabsTrigger>
+              <TabsTrigger value="firewall">Dharma Firewall</TabsTrigger>
+            </TabsList>
+            {result && (
+              <Button
+                variant="outline"
+                size="icon-sm"
+                title="Export mission brief as PDF"
+                aria-label="Export brief PDF"
+                className="shrink-0 no-print"
+                onClick={() => window.print()}
+              >
+                <Printer className="size-3.5" />
+              </Button>
+            )}
+          </div>
         </div>
         <div className="min-h-0 flex-1 overflow-auto px-3 pb-4">
           <TabsContent value="report" className="mt-3">

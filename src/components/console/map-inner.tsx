@@ -5,7 +5,7 @@ import type { Feature, GeoJsonObject } from "geojson";
 import type { PathOptions } from "leaflet";
 import { MISSIONS } from "@/lib/engine/missions";
 import { useConsole } from "@/lib/store";
-import type { GeoFeature } from "@/lib/engine/types";
+import type { GeoFeature, MissionId } from "@/lib/engine/types";
 import "leaflet/dist/leaflet.css";
 
 const ESRI =
@@ -14,6 +14,39 @@ const HILL =
   "https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}";
 const ATTR = "Tiles © Esri";
 const INDIA: [number, number] = [22.97, 78.66];
+
+/** Color-coded category palette for mission pins */
+const MISSION_PIN_COLOR: Record<MissionId, string> = {
+  kaziranga:        "#5b9aa0", // flood → teal/water
+  kuttanad:         "#3b82f6", // flood → blue
+  joshimath:        "#c45c4a", // subsidence → red
+  lhonak_glof:      "#60a5fa", // glacial → ice blue
+  chambal:          "#6b8f71", // deforestation → forest green
+  sundarbans:       "#4a7c59", // mangrove → deep green
+  delhi_thermal:    "#f97316", // thermal → orange
+  rajasthan_mineral:"#eab308", // mineral → gold
+};
+
+const MISSION_CATEGORY_LABEL: Record<MissionId, string> = {
+  kaziranga:        "Flood",
+  kuttanad:         "Flood",
+  joshimath:        "Subsidence",
+  lhonak_glof:      "GLOF",
+  chambal:          "Forest",
+  sundarbans:       "Mangrove",
+  delhi_thermal:    "Thermal",
+  rajasthan_mineral:"Mineral",
+};
+
+function makePulseIcon(color: string): L.DivIcon {
+  return L.divIcon({
+    className: "mission-pin",
+    html: `<div class="mission-pin-inner" style="color:${color}"></div>`,
+    iconSize: [14, 14],
+    iconAnchor: [7, 7],
+    tooltipAnchor: [0, -10],
+  });
+}
 
 function styleFeature(feature?: Feature): PathOptions {
   const kind = (feature?.properties as GeoFeature["properties"] | undefined)?.kind;
@@ -231,6 +264,10 @@ export function MapInner() {
               : ""
         }
       />
+
+      {/* SAR scanline cinematic overlay — shown in all SAR sub-modes */}
+      {sar && <div className="sar-scanline-overlay" aria-hidden="true" />}
+
       <Pane name="compare" style={{ zIndex: 350 }}>
         <TileLayer url={HILL} attribution={ATTR} />
       </Pane>
@@ -274,22 +311,40 @@ export function MapInner() {
           <CircleMarker
             key={m.id}
             center={m.center}
-            radius={8}
-            pathOptions={{
-              color: "#e8e6e1",
-              weight: 1.5,
-              fillColor: "#7a9e8a",
-              fillOpacity: 0.85,
-            }}
+            radius={0}
+            pathOptions={{ opacity: 0, fillOpacity: 0 }}
             eventHandlers={{ click: () => void loadMission(m.id) }}
           >
-            <Tooltip direction="top" offset={[0, -8]}>
+            {/* We overlay a DivIcon on top via a Marker — use a zero-radius CircleMarker
+                as the click target and place the visual pin via Leaflet Marker below */}
+            <Tooltip direction="top" offset={[0, -12]}>
               <span className="font-sans text-xs">
-                {m.code} · {m.title}
+                <strong>{m.code}</strong> · {m.title}
+                <br />
+                <span style={{ color: MISSION_PIN_COLOR[m.id] }}>
+                  ● {MISSION_CATEGORY_LABEL[m.id]}
+                </span>
               </span>
             </Tooltip>
           </CircleMarker>
         ))}
+
+      {/* Animated pulse Marker pins per mission */}
+      {!result &&
+        MISSIONS.map((m) => {
+          const PulseMarker = () => {
+            const map = useMap();
+            useEffect(() => {
+              const icon = makePulseIcon(MISSION_PIN_COLOR[m.id]);
+              const marker = L.marker(m.center, { icon, interactive: true })
+                .addTo(map)
+                .on("click", () => void loadMission(m.id));
+              return () => { map.removeLayer(marker); };
+            }, [map]);
+            return null;
+          };
+          return <PulseMarker key={`pin-${m.id}`} />;
+        })}
     </MapContainer>
   );
 }

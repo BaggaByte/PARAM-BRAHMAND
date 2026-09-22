@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { Globe, Info, RotateCcw, ShieldAlert } from "lucide-react";
+
 import { LANGUAGES } from "@/lib/engine/languages";
 import { useConsole } from "@/lib/store";
 import { Button } from "@/components/ui/button";
@@ -33,6 +35,15 @@ export function TopBar() {
   const lang = LANGUAGES.find((l) => l.code === language);
   const activeViolation = VIOLATION_OPTIONS.find((v) => v.value === physicsViolation);
 
+  // Live IST clock
+  const [istTime, setIstTime] = useState(() => new Date());
+  useEffect(() => {
+    const t = window.setInterval(() => setIstTime(new Date()), 1000);
+    return () => window.clearInterval(t);
+  }, []);
+  const istStr = istTime.toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour12: false });
+
+
   return (
     <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border bg-background px-3 md:px-4">
       <button
@@ -55,6 +66,8 @@ export function TopBar() {
         <span className="hidden items-center gap-1.5 rounded-full border border-border bg-card/60 px-2 py-0.5 font-mono text-[11px] text-muted-foreground lg:inline-flex">
           <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
           <span>7-Layer OS Active</span>
+          <span className="text-muted-foreground/40">·</span>
+          <span className="tabular-nums text-sage">{istStr} IST</span>
         </span>
         {result && (
           <span className="hidden items-center gap-2 font-mono text-xs text-muted-foreground md:flex">
