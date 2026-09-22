@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Globe, Info, RotateCcw, ShieldAlert } from "lucide-react";
+import { Globe, Info, RotateCcw, ShieldAlert, Sparkles } from "lucide-react";
 
 import { LANGUAGES } from "@/lib/engine/languages";
 import { useConsole } from "@/lib/store";
@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Mark } from "./logo";
+import { HelpButton } from "./onboarding-guide";
 import type { PhysicsViolationType } from "@/lib/engine/types";
 
 const VIOLATION_OPTIONS: { value: PhysicsViolationType; label: string; desc: string }[] = [
@@ -140,10 +141,11 @@ export function TopBar() {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button variant="ghost" size="icon-sm" onClick={() => setAboutOpen(true)} aria-label="About">
+        <Button variant="ghost" size="icon-sm" onClick={() => setAboutOpen(true)} aria-label="About" title="About this system">
           <Info className="size-4" />
         </Button>
-        <Button variant="ghost" size="icon-sm" onClick={reset} aria-label="Reset view">
+        <HelpButton />
+        <Button variant="ghost" size="icon-sm" onClick={reset} aria-label="Reset view" title="Reset and start over">
           <RotateCcw className="size-4" />
         </Button>
       </div>

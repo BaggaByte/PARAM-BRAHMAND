@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Layers, ScrollText } from "lucide-react";
 import { Group, Panel, Separator as ResizeHandle } from "react-resizable-panels";
 import { Toaster } from "sonner";
@@ -18,17 +19,42 @@ import { ReportPanel } from "./report-panel";
 import { TopBar } from "./top-bar";
 import { LeftRail } from "./left-rail";
 import { SoundManager } from "./sound-manager";
+import { OnboardingGuide } from "./onboarding-guide";
+import { WelcomeScreen } from "./welcome-screen";
 
 export function AppShell() {
   const booted = useConsole((s) => s.booted);
   const mobileSheet = useConsole((s) => s.mobileSheet);
   const setMobileSheet = useConsole((s) => s.setMobileSheet);
+  const [showWelcome, setShowWelcome] = useState(() => {
+    // Show welcome screen if user hasn't completed onboarding
+    if (typeof window !== "undefined") {
+      return !localStorage.getItem("pb.onboarding_completed");
+    }
+    return false;
+  });
+
+  const handleGetStarted = () => {
+    setShowWelcome(false);
+  };
+
+  if (showWelcome) {
+    return (
+      <TooltipProvider delayDuration={250}>
+        <div className="flex h-dvh flex-col bg-background text-foreground">
+          <TopBar />
+          <WelcomeScreen onGetStarted={handleGetStarted} />
+        </div>
+      </TooltipProvider>
+    );
+  }
 
   return (
     <TooltipProvider delayDuration={250}>
       <div className="flex h-dvh flex-col bg-background text-foreground">
         {!booted && <BootScreen />}
         <SoundManager />
+        <OnboardingGuide />
         <TopBar />
 
         <div className="flex min-h-0 flex-1">
