@@ -19,7 +19,7 @@ export type MissionId =
   | "delhi_thermal"
   | "rajasthan_mineral";
 
-export type MapMode = "optical" | "sar" | "dem";
+export type MapMode = "optical" | "sar" | "dem" | "thermal";
 
 export type LangCode =
   | "en"

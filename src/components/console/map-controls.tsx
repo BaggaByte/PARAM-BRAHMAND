@@ -9,7 +9,8 @@ import {
   Compass,
   Grid3x3,
   Eye,
-  Target
+  Target,
+  Flame
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -59,6 +60,7 @@ export function MapControls() {
     { value: "optical" as const, label: "Satellite View", icon: <Eye className="size-4" /> },
     { value: "sar" as const, label: "Radar (SAR)", icon: <Grid3x3 className="size-4" /> },
     { value: "dem" as const, label: "Terrain (DEM)", icon: <Layers className="size-4" /> },
+    { value: "thermal" as const, label: "Thermal (IR)", icon: <Flame className="size-4" /> },
   ];
 
   const currentMode = mapModes.find((m) => m.value === mapMode);
@@ -202,11 +204,14 @@ export function MapControls() {
 
             {/* Map Mode Badge */}
             <div className="flex items-center gap-2 pt-1">
-              <Badge variant="outline" className="text-xs border-sage/40 text-sage">
+              <Badge variant="outline" className="border-sage/40 text-sage text-xs">
                 {currentMode?.label}
               </Badge>
               {mapMode === "sar" && (
                 <span className="text-xs text-muted-foreground">All-weather radar</span>
+              )}
+              {mapMode === "thermal" && (
+                <span className="text-xs text-muted-foreground">Heat/fire detection</span>
               )}
             </div>
           </div>

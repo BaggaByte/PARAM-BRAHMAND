@@ -8,6 +8,7 @@ import { MISSIONS } from "@/lib/engine/missions";
 import { useConsole } from "@/lib/store";
 import type { GeoFeature, MissionId } from "@/lib/engine/types";
 import { MapControls } from "./map-controls";
+import { ThermalOverlay } from "./thermal-overlay";
 import "leaflet/dist/leaflet.css";
 
 const ESRI =
@@ -313,6 +314,7 @@ export function MapInner() {
   const loadMission = useConsole((s) => s.loadMission);
   const sar = mapMode === "sar";
   const dem = mapMode === "dem";
+  const thermal = mapMode === "thermal";
 
   return (
     <div className="relative h-full w-full">
@@ -338,9 +340,14 @@ export function MapInner() {
               : "sar-tiles"
             : dem
               ? "dem-tiles"
-              : ""
+              : thermal
+                ? "thermal-tiles"
+                : ""
         }
       />
+
+      {/* Thermal overlay - shown in thermal mode */}
+      {thermal && result && <ThermalOverlay />}
 
       {/* SAR scanline cinematic overlay — shown in all SAR sub-modes */}
       {sar && <div className="sar-scanline-overlay" aria-hidden="true" />}
