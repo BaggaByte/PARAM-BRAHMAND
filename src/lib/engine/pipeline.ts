@@ -124,6 +124,10 @@ function inferCover(center: [number, number]): Landcover {
   if (lat > 25.5 && lat < 28 && lng > 89) return "flood_canopy";
   if (lat > 8.5 && lat < 11 && lng > 76 && lng < 77.5) return "kuttanad";
   if (lat > 24 && lat < 27.5 && lng > 76 && lng < 79.5) return "ravine_agri";
+  if (lat > 21 && lat < 22.8 && lng > 88 && lng < 90) return "mangrove_delta";
+  if (lat > 27 && lat < 28.5 && lng > 87.5 && lng < 89.2) return "glacial_lake";
+  if (lat > 28.2 && lat < 29.2 && lng > 76.5 && lng < 77.8) return "urban_thermal";
+  if (lat > 25.5 && lat < 27.5 && lng > 73.5 && lng < 75.8) return "arid_mineral";
   return "generic";
 }
 

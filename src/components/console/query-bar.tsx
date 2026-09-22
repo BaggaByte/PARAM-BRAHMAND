@@ -46,8 +46,9 @@ export function QueryBar() {
         inputRef.current?.focus();
       }
       if (e.key === "Escape") inputRef.current?.blur();
-      if (e.key >= "1" && e.key <= "4" && document.activeElement?.tagName !== "INPUT") {
-        const m = MISSIONS[Number(e.key) - 1];
+      const numKey = Number(e.key);
+      if (numKey >= 1 && numKey <= MISSIONS.length && document.activeElement?.tagName !== "INPUT") {
+        const m = MISSIONS[numKey - 1];
         if (m) void useConsole.getState().loadMission(m.id);
       }
     };

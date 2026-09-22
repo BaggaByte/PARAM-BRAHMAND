@@ -36,6 +36,25 @@ function styleFeature(feature?: Feature): PathOptions {
       return { color: "#c45c4a", weight: 1.5, fillColor: "#6b8f71", fillOpacity: 0.45 };
     case "road":
       return { color: "#e8e6e1", weight: 3, opacity: 0.92 };
+    case "mangrove_loss":
+      return { color: "#4a7c59", weight: 1.5, fillColor: "#2d5a3f", fillOpacity: 0.45 };
+    case "lake":
+      return { color: "#3b82f6", weight: 1.5, fillColor: "#2563eb", fillOpacity: 0.4 };
+    case "hazard":
+      return { color: "#ef4444", weight: 2, fillColor: "#dc2626", fillOpacity: 0.5 };
+    case "flood_path":
+      return { color: "#06b6d4", weight: 3, opacity: 0.85, dashArray: "6 4" };
+    case "plume":
+      return { color: "#a855f7", weight: 1, fillColor: "#9333ea", fillOpacity: 0.3 };
+    case "hotspot":
+      return { color: "#f97316", weight: 2, fillColor: "#ea580c", fillOpacity: 0.55 };
+    case "trajectory":
+      return { color: "#fb923c", weight: 2.5, dashArray: "4 4", opacity: 0.9 };
+    case "mineral":
+    case "core_target":
+      return { color: "#eab308", weight: 1.5, fillColor: "#ca8a04", fillOpacity: 0.42 };
+    case "fault":
+      return { color: "#d97706", weight: 2, dashArray: "5 3", opacity: 0.88 };
     default:
       return { color: "#7a9e8a", weight: 1, fillColor: "#7a9e8a", fillOpacity: 0.18 };
   }

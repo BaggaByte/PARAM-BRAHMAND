@@ -120,16 +120,22 @@ Traditional vision-language models hallucinate physical impossibilities—predic
 
 ---
 
-## 🚀 Live SIH Pitch Missions
+## 🚀 Live SIH Pitch Missions (8 Core Scenarios)
 
-The platform includes four fully benchmarked mission operational scenarios:
+The platform includes **8 fully benchmarked operational mission scenarios** across all geographic and physiographic zones of India:
 
-| Code | Location | Disaster / Challenge | Key Technology Used |
-|---|---|---|---|
-| `KS-FL-07` | **Kaziranga National Park, Assam** | Sub-canopy monsoon inundation under 100% cloud cover | PolInSAR RVoG + $P_d$ Double-Bounce Decomposition |
-| `JH-DN-02` | **Joshimath, Uttarakhand** | 2 mm/month crustal subsidence in Himalayan fault | Multi-temporal DInSAR Interferometric Phase Shifts |
-| `CB-CA-11` | **Chambal River Basin, MP/RJ** | Causal separation of legal harvesting vs. illegal logging | Pearl SCMs (94.8% false alarm reduction) |
-| `KL-HW-04` | **Kuttanad, Kerala** | Below-sea-level highway submergence & NDMA evacuation | Sub-meter GeoJSON vectorizer + NDMA SOP Routing |
+| Code | Location | Disaster / Challenge | Primary Agent | Key Technology Used |
+|---|---|---|---|---|
+| `KS-FL-07` | **Kaziranga National Park, Assam** | Sub-canopy monsoon inundation under 100% cloud cover | **Kaal-Radar** | PolInSAR RVoG + $P_d$ Double-Bounce Decomposition |
+| `JH-DN-02` | **Joshimath, Uttarakhand** | 2 mm/month crustal subsidence in Himalayan fault | **Ratna-Garbha** | Multi-temporal DInSAR Interferometric Phase Shifts |
+| `CB-CA-11` | **Chambal River Basin, MP/RJ** | Causal separation of legal harvesting vs. illegal logging | **Vivek-Causal** | Pearl SCMs (94.8% false alarm reduction) |
+| `KL-HW-04` | **Kuttanad, Kerala** | Below-sea-level highway submergence & NDMA evacuation | **Bhoomi-Rakshak** | Sub-meter GeoJSON vectorizer + NDMA SOP Routing |
+| `SB-MG-09` | **Sundarbans Delta, West Bengal** | Cyclonic storm surge & mangrove bio-shield erosion | **Samay-Change** | Dual-polarization NISAR L-band coherence decay ($\Delta \gamma$) |
+| `LD-GL-05` | **South Lhonak Lake, Sikkim** | Glacial Lake Outburst Flood (GLOF) & moraine collapse | **Bhoomi-Rakshak** | Cartosat-3 sub-meter DEM + hydrodynamic slope breach |
+| `DL-AQ-03` | **Delhi-NCR / Punjab Border** | Stubble burning hotspots & nocturnal thermal inversion | **Bhoomi-Optical** | TRISHNA 8-band thermal IR LST retrieval + FRP telemetry |
+| `RJ-MN-12` | **Degana, Nagaur, Rajasthan** | Strategic lithium pegmatite & rare-earth greisen veins | **Ratna-Garbha** | HyIS 200-band hyperspectral Spectral Angle Mapper (SAM) |
+
+> **🌐 Open-World / Ad-Hoc Query Engine:** In addition to these 8 pre-configured scenarios, users can pan/zoom to **any geographic coordinate on Earth** and issue natural language or vernacular voice queries. The engine dynamically infers local landcover, extracts DEM slopes, runs 128-D physics unmixing, applies GeoCP conformal bounds, enforces the Dharma Firewall, and streams court-admissible GeoJSON vector boundaries in real time.
 
 ---
 

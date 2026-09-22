@@ -9,7 +9,15 @@ export type AgentId =
   | "bhoomi_rakshak"
   | "ratna_garbha";
 
-export type MissionId = "kaziranga" | "joshimath" | "chambal" | "kuttanad";
+export type MissionId =
+  | "kaziranga"
+  | "joshimath"
+  | "chambal"
+  | "kuttanad"
+  | "sundarbans"
+  | "lhonak_glof"
+  | "delhi_thermal"
+  | "rajasthan_mineral";
 
 export type MapMode = "optical" | "sar" | "dem";
 
@@ -163,10 +171,34 @@ export type GeoGeom =
   | { type: "LineString"; coordinates: number[][] }
   | { type: "Point"; coordinates: number[] };
 
+export type GeoFeatureKind =
+  | "flood"
+  | "canopy_flood"
+  | "road"
+  | "subsidence"
+  | "harvest"
+  | "deforest"
+  | "village"
+  | "aoi"
+  | "mangrove_loss"
+  | "lake"
+  | "hazard"
+  | "flood_path"
+  | "infrastructure"
+  | "plume"
+  | "hotspot"
+  | "trajectory"
+  | "station"
+  | "mineral"
+  | "core_target"
+  | "fault"
+  | "gsi_point"
+  | (string & {});
+
 export interface GeoFeature {
   type: "Feature";
   properties: {
-    kind: "flood" | "canopy_flood" | "road" | "subsidence" | "harvest" | "deforest" | "village" | "aoi";
+    kind: GeoFeatureKind;
     name: string;
     value?: number;
     unit?: string;
@@ -239,6 +271,10 @@ export type Landcover =
   | "mountain_town"
   | "ravine_agri"
   | "kuttanad"
+  | "mangrove_delta"
+  | "glacial_lake"
+  | "urban_thermal"
+  | "arid_mineral"
   | "generic";
 
 export interface OpticalBands {

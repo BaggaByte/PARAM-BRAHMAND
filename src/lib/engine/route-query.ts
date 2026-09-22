@@ -41,6 +41,17 @@ export function routeQuery(raw: string, uiLang: LangCode): RouteDecision {
       "nh-37",
       "काजीरंगा",
       "केरल",
+      "sundarban",
+      "সুন্দরবন",
+      "lhonak",
+      "glof",
+      "sikkim",
+      "stubble",
+      "पराली",
+      "delhi",
+      "degana",
+      "lithium",
+      "लीथियम",
     ];
     return keys.some((k) => q.includes(k.toLowerCase()) && bag.includes(k.toLowerCase())) ||
       m.samples.some((s) => s.text.toLowerCase() === raw.trim().toLowerCase());
@@ -51,10 +62,18 @@ export function routeQuery(raw: string, uiLang: LangCode): RouteDecision {
   if (!missionId) {
     if (/kaziranga|kohora|bagori|brahmaputra|assam|काजीरंगा|অসম/.test(q)) missionId = "kaziranga";
     else if (/joshimath|chamoli|badrinath|जोशीमठ|manohar|singhdhar/.test(q)) missionId = "joshimath";
-    else if (/chambal|chambal|रबी|rabi|harvest|deforest|चंबल/.test(q) && /forest|harvest|deforest|कटाई|फसल|जंगल/.test(q))
+    else if (/chambal|रबी|rabi|harvest|deforest|चंबल/.test(q) && /forest|harvest|deforest|कटाई|फसल|जंगल/.test(q))
       missionId = "chambal";
     else if (/kuttanad|alappuzha|kerala|nh-?66|केरल|कुट्ट|हाईवे|highway/.test(q) && /flood|बाढ़|water|पानी|highway|हाईवे/.test(q))
       missionId = "kuttanad";
+    else if (/sundarban|gosaba|kultali|delta|mangrove|সুন্দরবন|मैंग्रोव/.test(q))
+      missionId = "sundarbans";
+    else if (/lhonak|glof|glacial|teesta|sikkim|moraine|ल्हाेनक|सिक्किम/.test(q))
+      missionId = "lhonak_glof";
+    else if (/delhi|ncr|stubble|पराली|inversion|smog|anand vihar|दिल्ली/.test(q))
+      missionId = "delhi_thermal";
+    else if (/degana|lithium|pegmatite|mineral|greisen|लीथियम|खनिज|डेगाना|aravalli/.test(q))
+      missionId = "rajasthan_mineral";
     else if (/chambal|चंबल/.test(q)) missionId = "chambal";
     else if (/kuttanad|kerala|केरल/.test(q)) missionId = "kuttanad";
   }

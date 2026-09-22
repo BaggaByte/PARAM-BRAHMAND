@@ -54,7 +54,7 @@ export function ReportPanel() {
         </p>
         <div className="mt-5 space-y-2 rounded-lg border border-border bg-secondary/50 p-3 text-xs">
           <p className="font-mono font-semibold uppercase tracking-wider text-sage">
-            Four SIH Live Pitch Case Studies:
+            Eight SIH Live Pitch Case Studies:
           </p>
           <ul className="space-y-1.5 text-muted-foreground">
             <li>
@@ -72,6 +72,22 @@ export function ReportPanel() {
             <li>
               <span className="font-medium text-foreground">4. Kuttanad (Kerala):</span> Below-MSL highway
               inundation with 22-language vernacular VIVA &amp; NDMA SOPs.
+            </li>
+            <li>
+              <span className="font-medium text-foreground">5. Sundarbans (WB):</span> Mangrove bio-shield loss &amp;
+              coherence decay (-62%) under NISAR L-band SAR.
+            </li>
+            <li>
+              <span className="font-medium text-foreground">6. South Lhonak (Sikkim):</span> Glacial Lake Outburst Flood
+              (GLOF) &amp; moraine subsidence alert via Cartosat-3 DEM.
+            </li>
+            <li>
+              <span className="font-medium text-foreground">7. Delhi-NCR (NCR/Punjab):</span> Stubble fire hotspots (186
+              clusters) &amp; thermal inversion via TRISHNA 8-band TIR.
+            </li>
+            <li>
+              <span className="font-medium text-foreground">8. Degana (Rajasthan):</span> Strategic rare-earth &amp;
+              lithium pegmatite detection via 200-band HyIS SAM.
             </li>
           </ul>
         </div>

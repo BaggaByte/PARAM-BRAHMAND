@@ -42,7 +42,7 @@ export function AboutDialog() {
             ))}
           </ol>
           <p className="mt-5 font-mono text-xs text-muted-foreground">
-            TensorTitans · Smart India Hackathon 2026 · keys 1–4 load missions · / focuses query
+            TensorTitans · Smart India Hackathon 2026 · keys 1–8 load missions · / focuses query
           </p>
           <Dialog.Close className="absolute right-3 top-3 rounded-sm p-1 text-muted-foreground hover:text-foreground">
             <X className="size-4" />

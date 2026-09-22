@@ -170,6 +170,70 @@ export function bandsFor(cover: Landcover): OpticalBands & {
         sunElDeg: 62,
         predictedClass: "standing_water",
       };
+    case "mangrove_delta":
+      return {
+        blue: 0.04,
+        green: 0.06,
+        red: 0.05,
+        nir: 0.24,
+        swir1: 0.12,
+        swir2: 0.06,
+        sigma0VvDb: -10.2,
+        sigma0VhDb: -16.4,
+        slopeDeg: 0.4,
+        canopyHeightM: 14.2,
+        albedo: 0.11,
+        sunElDeg: 56,
+        predictedClass: "mangrove_dieback",
+      };
+    case "glacial_lake":
+      return {
+        blue: 0.14,
+        green: 0.16,
+        red: 0.11,
+        nir: 0.04,
+        swir1: 0.02,
+        swir2: 0.01,
+        sigma0VvDb: -16.5,
+        sigma0VhDb: -23.2,
+        slopeDeg: 28.4,
+        canopyHeightM: 0.0,
+        albedo: 0.08,
+        sunElDeg: 42,
+        predictedClass: "moraine_dam_breach",
+      };
+    case "urban_thermal":
+      return {
+        blue: 0.12,
+        green: 0.14,
+        red: 0.16,
+        nir: 0.2,
+        swir1: 0.26,
+        swir2: 0.22,
+        sigma0VvDb: -6.5,
+        sigma0VhDb: -12.4,
+        slopeDeg: 1.2,
+        canopyHeightM: 4.5,
+        albedo: 0.21,
+        sunElDeg: 48,
+        predictedClass: "thermal_anomaly",
+      };
+    case "arid_mineral":
+      return {
+        blue: 0.15,
+        green: 0.19,
+        red: 0.24,
+        nir: 0.28,
+        swir1: 0.38,
+        swir2: 0.32,
+        sigma0VvDb: -14.8,
+        sigma0VhDb: -22.1,
+        slopeDeg: 6.8,
+        canopyHeightM: 1.2,
+        albedo: 0.31,
+        sunElDeg: 55,
+        predictedClass: "pegmatite_greisen",
+      };
     default:
       return {
         blue: 0.08,
@@ -191,12 +255,25 @@ export function bandsFor(cover: Landcover): OpticalBands & {
 
 function yamaguchi(cover: Landcover, sigma0VvDb: number) {
   // Build a plausible T3 from landcover, then 4-component powers.
-  const surface = cover === "floodplain" || cover === "kuttanad" ? 0.72 : 0.22;
+  const surface =
+    cover === "floodplain" || cover === "kuttanad" || cover === "glacial_lake"
+      ? 0.72
+      : cover === "arid_mineral"
+        ? 0.65
+        : 0.22;
   const dbl =
-    cover === "flood_canopy" ? 0.58 : cover === "mountain_town" ? 0.41 : 0.12;
+    cover === "flood_canopy" || cover === "mangrove_delta"
+      ? 0.58
+      : cover === "mountain_town" || cover === "urban_thermal"
+        ? 0.45
+        : 0.12;
   const vol =
-    cover === "flood_canopy" ? 0.28 : cover === "ravine_agri" ? 0.18 : 0.35;
-  const helix = cover === "mountain_town" ? 0.08 : 0.03;
+    cover === "flood_canopy" || cover === "mangrove_delta"
+      ? 0.32
+      : cover === "ravine_agri"
+        ? 0.18
+        : 0.25;
+  const helix = cover === "mountain_town" || cover === "urban_thermal" ? 0.08 : 0.03;
   const norm = surface + dbl + vol + helix;
   const ps = surface / norm;
   const pd = dbl / norm;
@@ -373,6 +450,34 @@ export function geoCP(cover: Landcover, extra?: Partial<GeoCPResult>): GeoCPResu
       moranI: 0.52,
       interval: [0.88, 0.99],
       zone: "Kerala backwater · below MSL",
+    },
+    mangrove_delta: {
+      ece: 0.021,
+      coverage: 0.965,
+      moranI: 0.51,
+      interval: [0.82, 0.98],
+      zone: "Ganges-Brahmaputra Delta · Tidal",
+    },
+    glacial_lake: {
+      ece: 0.019,
+      coverage: 0.973,
+      moranI: 0.38,
+      interval: [1.8, 3.4],
+      zone: "High-Altitude Glaciated Cryosphere",
+    },
+    urban_thermal: {
+      ece: 0.024,
+      coverage: 0.958,
+      moranI: 0.62,
+      interval: [0.78, 0.95],
+      zone: "Indo-Gangetic Basin · Atmospheric",
+    },
+    arid_mineral: {
+      ece: 0.016,
+      coverage: 0.978,
+      moranI: 0.26,
+      interval: [0.89, 0.99],
+      zone: "Arid Shield & Metamorphic Greisen",
     },
     generic: {
       ece: 0.031,

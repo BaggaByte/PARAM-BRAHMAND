@@ -110,6 +110,42 @@ DEMO_MISSIONS = {
         "sigma0_vv_db": -21.0,
         "description": "Kuttanad below-sea-level basin · Bhoomi-Rakshak NDMA alert"
     },
+    "sundarbans": {
+        "name": "Sundarbans Mangrove Loss & Cyclone Surge",
+        "query": "Map mangrove canopy loss and saline breach in Sundarbans",
+        "language": "en",
+        "center": [21.95, 88.85],
+        "dem_slope_deg": 0.4,
+        "sigma0_vv_db": -10.2,
+        "description": "Sundarbans tidal delta · Samay-Change bi-temporal coherence"
+    },
+    "lhonak_glof": {
+        "name": "South Lhonak Glacial Lake Breach (GLOF)",
+        "query": "दक्षिण ल्होनक झील में ग्लेशियर टूटने और बाढ़ का खतरा नापो",
+        "language": "hi",
+        "center": [27.91, 88.20],
+        "dem_slope_deg": 28.4,
+        "sigma0_vv_db": -16.5,
+        "description": "Sikkim Teesta GLOF corridor · Bhoomi-Rakshak + Ratna-Garbha"
+    },
+    "delhi_thermal": {
+        "name": "Delhi-NCR Stubble Fire & Inversion",
+        "query": "Track stubble fire thermal anomalies and plume dispersion across Delhi-NCR",
+        "language": "en",
+        "center": [28.65, 77.15],
+        "dem_slope_deg": 1.2,
+        "sigma0_vv_db": -6.5,
+        "description": "Delhi-NCR air quality crisis · Bhoomi-Optical TRISHNA TIR"
+    },
+    "rajasthan_mineral": {
+        "name": "Aravalli Lithium & Rare-Earth Pegmatite",
+        "query": "डेगाना अरावली बेल्ट में लीथियम और दुर्लभ खनिज नसों की पहचान करो",
+        "language": "hi",
+        "center": [26.88, 74.32],
+        "dem_slope_deg": 6.8,
+        "sigma0_vv_db": -14.8,
+        "description": "Degana tungsten-lithium belt · Ratna-Garbha HyIS SAM unmixing"
+    },
 }
 
 
