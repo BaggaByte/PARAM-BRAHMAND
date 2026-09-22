@@ -14,8 +14,11 @@ import {
   VolumeX,
   XCircle,
   Zap,
+  Activity,
+  TrendingUp,
 } from "lucide-react";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,6 +32,8 @@ import {
 import { useConsole, type RightTab } from "@/lib/store";
 import { cn, formatNum } from "@/lib/utils";
 import type { PhysicsViolationType } from "@/lib/engine/types";
+import { Manifold3DViz } from "./manifold-3d-viz";
+import { LiveTelemetryCharts } from "./live-telemetry-charts";
 
 export function ReportPanel() {
   const result = useConsole((s) => s.result);
@@ -113,7 +118,12 @@ export function ReportPanel() {
                 Trace ({result?.trace.length ?? liveTrace.length})
               </TabsTrigger>
               <TabsTrigger value="manifold" className="text-xs">
+                <Activity className="mr-1 size-3.5" />
                 Manifold
+              </TabsTrigger>
+              <TabsTrigger value="telemetry" className="text-xs">
+                <TrendingUp className="mr-1 size-3.5" />
+                Live Data
               </TabsTrigger>
               <TabsTrigger value="firewall" className="text-xs">
                 Firewall
@@ -142,7 +152,10 @@ export function ReportPanel() {
             {running && liveTrace.length === 0 && <Pending />}
           </TabsContent>
           <TabsContent value="manifold" className="mt-3">
-            {result ? <Manifold /> : <Pending />}
+            {result ? <Manifold3DViz /> : <Pending />}
+          </TabsContent>
+          <TabsContent value="telemetry" className="mt-3">
+            <LiveTelemetryCharts />
           </TabsContent>
           <TabsContent value="firewall" className="mt-3">
             {result ? <Firewall /> : <Pending />}

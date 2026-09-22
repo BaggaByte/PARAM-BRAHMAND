@@ -17,6 +17,7 @@ import { QueryBar } from "./query-bar";
 import { ReportPanel } from "./report-panel";
 import { TopBar } from "./top-bar";
 import { LeftRail } from "./left-rail";
+import { SoundManager } from "./sound-manager";
 
 export function AppShell() {
   const booted = useConsole((s) => s.booted);
@@ -27,6 +28,7 @@ export function AppShell() {
     <TooltipProvider delayDuration={250}>
       <div className="flex h-dvh flex-col bg-background text-foreground">
         {!booted && <BootScreen />}
+        <SoundManager />
         <TopBar />
 
         <div className="flex min-h-0 flex-1">

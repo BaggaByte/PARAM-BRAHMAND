@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import L from "leaflet";
 import { CircleMarker, GeoJSON, MapContainer, Pane, TileLayer, Tooltip, useMap } from "react-leaflet";
 import type { Feature, GeoJsonObject } from "geojson";
@@ -230,6 +231,80 @@ function CursorTracker() {
   return null;
 }
 
+// Particle system for visualizing data flow
+function ParticleOverlay() {
+  const result = useConsole((s) => s.result);
+  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; vx: number; vy: number }>>([]);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationRef = useRef<number>();
+
+  useEffect(() => {
+    if (!result || !canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Generate initial particles
+    const newParticles = Array.from({ length: 30 }, (_, i) => ({
+      id: i,
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 2,
+      vy: (Math.random() - 0.5) * 2,
+    }));
+    setParticles(newParticles);
+
+    const animate = () => {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      setParticles((prev) =>
+        prev.map((p) => {
+          let { x, y, vx, vy } = p;
+
+          x += vx;
+          y += vy;
+
+          // Bounce off edges
+          if (x < 0 || x > canvas.width) vx *= -1;
+          if (y < 0 || y > canvas.height) vy *= -1;
+
+          // Draw particle
+          ctx.fillStyle = `hsla(var(--sage) / 0.6)`;
+          ctx.beginPath();
+          ctx.arc(x, y, 2, 0, Math.PI * 2);
+          ctx.fill();
+
+          return { ...p, x, y, vx, vy };
+        })
+      );
+
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [result]);
+
+  if (!result) return null;
+
+  return (
+    <canvas
+      ref={canvasRef}
+      width={800}
+      height={600}
+      className="pointer-events-none absolute inset-0 z-[350] opacity-30"
+      style={{ mixBlendMode: 'screen' }}
+    />
+  );
+}
+
 export function MapInner() {
   const result = useConsole((s) => s.result);
   const mapMode = useConsole((s) => s.mapMode);
@@ -276,6 +351,7 @@ export function MapInner() {
       <SizeFix />
       <SwipeClip />
       <CursorTracker />
+      <ParticleOverlay />
 
       {result && (
         <GeoJSON

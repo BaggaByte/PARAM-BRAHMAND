@@ -12,7 +12,7 @@ import type {
   TraceStep,
 } from "@/lib/engine/types";
 
-export type RightTab = "report" | "trace" | "manifold" | "firewall";
+export type RightTab = "report" | "trace" | "manifold" | "telemetry" | "firewall";
 export type MobileSheet = "agents" | "report" | "missions" | null;
 
 interface ConsoleState {
