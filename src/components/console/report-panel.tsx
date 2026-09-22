@@ -16,6 +16,7 @@ import {
   Zap,
   Activity,
   TrendingUp,
+  BarChart3,
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -34,6 +35,7 @@ import { cn, formatNum } from "@/lib/utils";
 import type { PhysicsViolationType } from "@/lib/engine/types";
 import { Manifold3DViz } from "./manifold-3d-viz";
 import { LiveTelemetryCharts } from "./live-telemetry-charts";
+import { InsightsPanel } from "./insights-panel";
 
 export function ReportPanel() {
   const result = useConsole((s) => s.result);
@@ -125,6 +127,10 @@ export function ReportPanel() {
                 <TrendingUp className="mr-1 size-3.5" />
                 Live Data
               </TabsTrigger>
+              <TabsTrigger value="insights" className="text-xs">
+                <BarChart3 className="mr-1 size-3.5" />
+                Insights
+              </TabsTrigger>
               <TabsTrigger value="firewall" className="text-xs">
                 Firewall
               </TabsTrigger>
@@ -156,6 +162,9 @@ export function ReportPanel() {
           </TabsContent>
           <TabsContent value="telemetry" className="mt-3">
             <LiveTelemetryCharts />
+          </TabsContent>
+          <TabsContent value="insights" className="mt-3">
+            <InsightsPanel />
           </TabsContent>
           <TabsContent value="firewall" className="mt-3">
             {result ? <Firewall /> : <Pending />}

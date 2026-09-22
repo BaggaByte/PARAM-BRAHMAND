@@ -7,6 +7,7 @@ import type { PathOptions } from "leaflet";
 import { MISSIONS } from "@/lib/engine/missions";
 import { useConsole } from "@/lib/store";
 import type { GeoFeature, MissionId } from "@/lib/engine/types";
+import { MapControls } from "./map-controls";
 import "leaflet/dist/leaflet.css";
 
 const ESRI =
@@ -314,18 +315,19 @@ export function MapInner() {
   const dem = mapMode === "dem";
 
   return (
-    <MapContainer
-      center={INDIA}
-      zoom={5}
-      minZoom={4}
-      maxZoom={17}
-      className="h-full w-full"
-      maxBounds={[
-        [4, 64],
-        [40, 102],
-      ]}
-      worldCopyJump={false}
-    >
+    <div className="relative h-full w-full">
+      <MapContainer
+        center={INDIA}
+        zoom={5}
+        minZoom={4}
+        maxZoom={17}
+        className="h-full w-full"
+        maxBounds={[
+          [4, 64],
+          [40, 102],
+        ]}
+        worldCopyJump={false}
+      >
       <TileLayer
         url={dem ? HILL : ESRI}
         attribution={ATTR}
@@ -422,5 +424,9 @@ export function MapInner() {
           return <PulseMarker key={`pin-${m.id}`} />;
         })}
     </MapContainer>
+      
+      {/* Map Controls Overlay */}
+      <MapControls />
+    </div>
   );
 }

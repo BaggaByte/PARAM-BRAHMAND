@@ -12,7 +12,7 @@ import type {
   TraceStep,
 } from "@/lib/engine/types";
 
-export type RightTab = "report" | "trace" | "manifold" | "telemetry" | "firewall";
+export type RightTab = "report" | "trace" | "manifold" | "telemetry" | "firewall" | "insights";
 export type MobileSheet = "agents" | "report" | "missions" | null;
 
 interface ConsoleState {
@@ -28,6 +28,7 @@ interface ConsoleState {
   activeLayer: number | null;
   liveTrace: TraceStep[];
   result: AnalysisResult | null;
+  history: AnalysisResult[];
   mapMode: MapMode;
   setMapMode: (m: MapMode) => void;
   sarDisplayMode: SarDisplayMode;
@@ -50,6 +51,7 @@ interface ConsoleState {
   center: [number, number];
   zoom: number;
   setView: (center: [number, number], zoom: number) => void;
+  flyToPosition: (center: [number, number], zoom: number) => void;
   cursorCoords: { lat: number; lng: number; elev: number } | null;
   setCursorCoords: (coords: { lat: number; lng: number; elev: number } | null) => void;
   isSpeaking: boolean;
@@ -102,6 +104,7 @@ export const useConsole = create<ConsoleState>((set, get) => ({
   activeLayer: null,
   liveTrace: [],
   result: null,
+  history: [],
   mapMode: "optical",
   setMapMode: (m) => set({ mapMode: m }),
   sarDisplayMode: "intensity",
@@ -124,6 +127,7 @@ export const useConsole = create<ConsoleState>((set, get) => ({
   center: INDIA,
   zoom: 5,
   setView: (center, zoom) => set({ center, zoom }),
+  flyToPosition: (center, zoom) => set({ center, zoom, flyNonce: get().flyNonce + 1 }),
   cursorCoords: null,
   setCursorCoords: (coords) => set({ cursorCoords: coords }),
   isSpeaking: false,
@@ -161,6 +165,7 @@ export const useConsole = create<ConsoleState>((set, get) => ({
       cursorCoords: null,
       isSpeaking: false,
       dualSarDemoOpen: false,
+      history: [], // Clear history on reset
     }),
   submit: async (text, violationOverride) => {
     const q = (text ?? get().query).trim();
@@ -199,6 +204,7 @@ export const useConsole = create<ConsoleState>((set, get) => ({
         rightTab: violation !== "none" ? "firewall" : "report",
         rightPanelOpen: true,
         swipe: 52,
+        history: [result, ...get().history].slice(0, 20), // Keep last 20 results
       });
       persistQuery(q);
     } catch {
