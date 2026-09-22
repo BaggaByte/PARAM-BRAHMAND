@@ -60,6 +60,9 @@ interface ConsoleState {
   setRightPanelOpen: (v: boolean) => void;
   leftRailTab: "agents" | "layers";
   setLeftRailTab: (t: "agents" | "layers") => void;
+  /** Live jury dual Optical↔SAR comparison demo (KS-FL-07) */
+  dualSarDemoOpen: boolean;
+  setDualSarDemoOpen: (v: boolean) => void;
   toggleZenMode: () => void;
   submit: (text?: string, violationOverride?: PhysicsViolationType) => Promise<void>;
   loadMission: (id: MissionId) => Promise<void>;
@@ -131,6 +134,8 @@ export const useConsole = create<ConsoleState>((set, get) => ({
   setRightPanelOpen: (v) => set({ rightPanelOpen: v }),
   leftRailTab: "agents",
   setLeftRailTab: (t) => set({ leftRailTab: t }),
+  dualSarDemoOpen: false,
+  setDualSarDemoOpen: (v) => set({ dualSarDemoOpen: v }),
   toggleZenMode: () => {
     const s = get();
     const isZen = !s.leftRailOpen && !s.rightPanelOpen;
@@ -155,6 +160,7 @@ export const useConsole = create<ConsoleState>((set, get) => ({
       query: "",
       cursorCoords: null,
       isSpeaking: false,
+      dualSarDemoOpen: false,
     }),
   submit: async (text, violationOverride) => {
     const q = (text ?? get().query).trim();
@@ -167,6 +173,7 @@ export const useConsole = create<ConsoleState>((set, get) => ({
       activeLayer: null,
       result: null,
       rightTab: "trace",
+      dualSarDemoOpen: false,
     });
     try {
       const result = await runPipeline(
@@ -203,7 +210,7 @@ export const useConsole = create<ConsoleState>((set, get) => ({
     if (!m) return;
     const sample =
       m.samples.find((s) => s.lang === get().language)?.text ?? m.samples[0].text;
-    set({ query: sample });
+    set({ query: sample, dualSarDemoOpen: false });
     await get().submit(sample);
   },
 }));
