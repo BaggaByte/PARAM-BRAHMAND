@@ -44,7 +44,11 @@ async function main() {
 
   const pool = new pg.Pool({ connectionString: databaseUrl, max: 1 });
   const client = await pool.connect();
+  const MIGRATION_LOCK_ID = 847291849182374n;
   try {
+    // Acquire session-level advisory lock to serialize concurrent deployment migrations
+    await client.query("SELECT pg_advisory_lock($1)", [MIGRATION_LOCK_ID.toString()]);
+
     await client.query(
       "CREATE TABLE IF NOT EXISTS _migrations (name TEXT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT now())",
     );
@@ -75,6 +79,11 @@ async function main() {
     }
     console.log(count ? `[migrate] done — ${count} migration(s) applied.` : "[migrate] up to date.");
   } finally {
+    try {
+      await client.query("SELECT pg_advisory_unlock($1)", [MIGRATION_LOCK_ID.toString()]);
+    } catch {
+      // Ignore unlock error if connection already closed
+    }
     client.release();
     await pool.end();
   }

@@ -139,63 +139,94 @@ The platform includes **8 fully benchmarked operational mission scenarios** acro
 
 ---
 
-## 📁 Repository Structure
+## 📁 Exact Repository Structure
 
 ```text
 PARAM-BRAHMAND/
-├── param_brahmand/                     # Python Core Engine
+├── param_brahmand/                     # Python Scientific Core Engine
 │   ├── physics/
-│   │   ├── prakriti_veda.py            # 128-D Invariant Physics Manifold
-│   │   ├── dharma_chakra.py            # Hard Physics Firewall
-│   │   └── geocp.py                    # GeoCP-v2 Spatial Conformal Calibration
+│   │   ├── prakriti_veda.py            # 128-D Invariant Physics Manifold (Yamaguchi, PolInSAR, MESMA)
+│   │   ├── dharma_chakra.py            # Hard Physics Firewall (Stokes, Hydrodynamic Slope, Albedo)
+│   │   └── geocp.py                    # GeoCP-v2 Spatial Conformal Calibration (Moran's I)
 │   ├── models/
-│   │   ├── geo_mamba.py                # Geo-Mamba 3.0 Linear SSM Backbone
-│   │   └── causal_scm.py               # Pearl Structural Causal Models
+│   │   └── geo_mamba.py                # Geo-Mamba 3.0 Linear SSM & SIRTI Scale-Invariance
 │   ├── agents/
-│   │   ├── ensemble.py                 # Navagraha 9-Agent Ensemble
-│   │   └── router.py                   # Sankalpa-Param LangGraph Router
+│   │   ├── navagraha.py                # Navagraha 9-Agent Specialist Ensemble + Vivek-Causal SCMs
+│   │   └── router.py                   # Sankalpa-Param Intent Classifier & LangGraph Router
 │   ├── training/
-│   │   ├── losses.py                   # CompositeGeoLoss (Dice, SADF, TopoLoss)
-│   │   ├── datasets.py                 # Streaming COG, PolInSAR & Hyperspectral Loaders
-│   │   └── benchmark_suite.py          # Benchmark vs. ResNet, Swin, Prithvi-100M
+│   │   ├── losses.py                   # PhysicsGuidedMultiTaskLoss (Dice, SADF, Conservation)
+│   │   ├── datasets.py                 # BigEarthNet, VRSBench, CDVQA Dataset Loaders
+│   │   └── benchmark_suite.py          # Benchmark vs. ResNet, Swin-B, Prithvi-100M
 │   ├── sensors/
-│   │   └── sensor_engines.py           # ISRO NISAR, RISAT-1A, EOS-04, CARTOSAT-3
+│   │   └── sensor_engines.py           # ISRO NISAR, RISAT-1A, EOS-04, CARTOSAT-3, TRISHNA, HyIS
 │   ├── data/
-│   │   ├── cog_streamer.py             # Windowed Cloud-Optimized GeoTIFF Streamer
-│   │   └── geojson_vectorizer.py       # Sub-meter Boundary GeoJSON Polygonizer
+│   │   └── cog_streamer.py             # Windowed Cloud-Optimized GeoTIFF (COG) Streamer
+│   ├── utils/
+│   │   └── geojson_vectorizer.py       # WGS84 Sub-Pixel GeoJSON Polygonizer
+│   ├── voice/
+│   │   └── bhasha_brahmand.py          # Bhasha-Brahmand 22-Language Vernacular Engine
 │   ├── evaluation/
-│   │   └── metrics.py                  # F1, mIoU, Conformal Coverage, Moran's I
-│   ├── pipeline.py                     # Integrated 7-Layer Execution Pipeline
+│   │   └── metrics.py                  # Evaluation Metrics & SOTA Benchmark Matrix
+│   ├── pipeline.py                     # Integrated 7-Layer End-to-End Pipeline
 │   └── api/
-│       └── server.py                   # Production FastAPI REST & Streaming Server
+│       ├── main.py                     # FastAPI REST API & Streaming Server
+│       └── server.py                   # Proxy entry point
 │
-├── src/                                # Frontend Earth Intelligence Console
+├── src/                                # Frontend & Edge Intelligence Console
 │   ├── components/
 │   │   ├── console/
-│   │   │   ├── top-bar.tsx             # Includes Live Dharma Firewall Violation Selector
-│   │   │   ├── map-view.tsx            # Leaflet Geospatial Multi-Layer Canvas
-│   │   │   ├── chat-panel.tsx          # 22-Language Multimodal Query Interface
-│   │   │   └── telemetry-panel.tsx     # Real-time Physics & Conformal Metrics
+│   │   │   ├── top-bar.tsx             # Live Dharma Firewall Violation Selector & Language Switcher
+│   │   │   ├── map-view.tsx            # Leaflet Multi-Layer Geospatial View
+│   │   │   ├── map-inner.tsx           # Bi-Temporal Split-Screen & Vector Polygon Renderer
+│   │   │   ├── chat-panel.tsx          # Vernacular Voice & Multimodal Query Panel
+│   │   │   ├── mission-dock.tsx        # Fast Scenario Switcher (8 Core Missions)
+│   │   │   ├── report-panel.tsx        # 4-Tier Disaster Briefs & NDMA SOP Directives
+│   │   │   └── telemetry-panel.tsx     # Real-time Physics & Conformal Coverage HUD
 │   │   └── ui/                         # Accessible UI Component Primitives
 │   ├── lib/
-│   │   ├── engine/                     # In-browser Physics & Agent Pipeline Emulators
-│   │   └── store.ts                    # Zustand State Store (Layers, Missions, Telemetry)
-│   └── routes/                         # Application Pages & Mission Views
+│   │   ├── engine/                     # In-Browser Edge Physics & Pipeline Engine (TypeScript)
+│   │   │   ├── missions.ts             # 8 Live SIH Mission Datasets & Vector Overlays
+│   │   │   ├── physics.ts              # In-browser 128-D Manifold, Yamaguchi & GeoCP Synthesizers
+│   │   │   ├── pipeline.ts             # Client-side 7-Layer Execution & FastAPI Sync
+│   │   │   ├── route-query.ts          # Vernacular toponym matcher & agent router
+│   │   │   └── types.ts                # Strict domain types & schemas
+│   │   └── store.ts                    # Zustand Console State Store
+│   └── routes/                         # Application Pages & Viewpoints
 │
-├── tests/                              # Comprehensive Verification Suite
-│   ├── test_physics.py                 # Manifold, Firewall, and GeoCP tests
-│   ├── test_models.py                  # Geo-Mamba & Causal SCM tests
+├── tests/                              # Automated Verification Suite (41/41 Tests)
+│   ├── test_prakriti_veda.py           # 128-D Manifold, Yamaguchi AG4U, MESMA tests
+│   ├── test_dharma_chakra.py           # Hard Physics Firewall & Rejection tests
+│   ├── test_geo_mamba.py               # Geo-Mamba Linear SSM & SIRTI tests
 │   ├── test_agents.py                  # Navagraha ensemble & routing tests
 │   ├── test_pipeline.py                # End-to-end integration tests
 │   └── test_phase_a_modules.py         # Losses, datasets, sensors, benchmarks & vectorizer
 │
-├── param_brahmand_complete_system.py   # Standalone Master System Demonstration Script
-├── run_tests.py                        # Automated Test Runner (41/41 tests passing)
+├── .github/workflows/
+│   └── ci.yml                          # Automated GitHub Actions CI Matrix (Node + Python)
+├── param_brahmand_complete_system.py   # Standalone Master Demonstration CLI
+├── run_tests.py                        # Automated Test Runner (41/41 passing)
 ├── pyproject.toml                      # PEP 517 Python Package Configuration
 ├── requirements.txt                    # Annotated Python Dependencies
 ├── package.json                        # Node.js Dependencies & Build Scripts
 └── vite.config.ts                      # Vite 6 Bundler Configuration
 ```
+
+---
+
+## ⚡ Dual-Engine Architecture: Edge & Scientific Core
+
+To guarantee both **instantaneous responsiveness during live jury pitches** and **deep scientific rigor on heavy satellite telemetry**, PARAM-BRAHMAND implements a **Dual-Engine Architecture**:
+
+1. **Client-Side Edge Engine (`src/lib/engine/`) [TypeScript]**:
+   - Executes directly within the browser without round-trip network delays.
+   - Provides instantaneous sub-second map rendering, bi-temporal split-screen swipes, 22-language query parsing, and on-the-fly physics synthesis.
+   - Enables 100% offline, bulletproof demonstrations even in auditorium environments with spotty connectivity.
+
+2. **Server-Side Scientific Engine (`param_brahmand/`) [Python / PyTorch / FastAPI]**:
+   - The production heavy-compute core.
+   - Runs full PyTorch Geo-Mamba 3.0 linear state-space sequence modeling, PolInSAR RVoG coherence inversions, and high-throughput Cloud-Optimized GeoTIFF (COG) streaming.
+   - Exposes clean REST endpoints (`POST /api/v1/analyze`, `POST /api/v1/firewall/validate`, `POST /api/v1/stream/cog`).
+   - The frontend console automatically performs optimistic background synchronization with `http://localhost:8000/api/v1/analyze` whenever the Python server is active.
 
 ---
 

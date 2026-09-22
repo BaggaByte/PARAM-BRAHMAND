@@ -6,6 +6,12 @@ dist/
 build/
 *.log
 
+# Environment & Secrets
+.env
+.env.*
+.env.local
+!.env.example
+
 # Python
 __pycache__/
 *.py[cod]
