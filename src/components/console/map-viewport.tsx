@@ -1,7 +1,16 @@
 import { Component, useEffect, useRef, useState, type ComponentType, type ReactNode } from "react";
-import { ChevronLeft, ChevronRight, Compass, Navigation, Radio, Satellite, SlidersHorizontal } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Navigation,
+  Satellite,
+  SlidersHorizontal,
+  X,
+} from "lucide-react";
 import { useConsole } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { SARDualComparisonViewer } from "./SARDualComparisonViewer";
 
 type InnerProps = Record<string, never>;
 
@@ -32,6 +41,8 @@ export function MapViewport() {
   const swipe = useConsole((s) => s.swipe);
   const setSwipe = useConsole((s) => s.setSwipe);
   const cursorCoords = useConsole((s) => s.cursorCoords);
+  const dualSarDemoOpen = useConsole((s) => s.dualSarDemoOpen);
+  const setDualSarDemoOpen = useConsole((s) => s.setDualSarDemoOpen);
 
   // Satellite orbit telemetry state (NISAR vs EOS-04)
   const [satIndex, setSatIndex] = useState(0);
@@ -117,6 +128,27 @@ export function MapViewport() {
     }
   };
 
+  /* ── Dual SAR jury demo overrides the map viewport ── */
+  if (dualSarDemoOpen) {
+    return (
+      <div className="relative h-full min-h-64 w-full overflow-hidden bg-ink">
+        <div className="absolute right-3 top-3 z-40">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 bg-background/90 backdrop-blur-sm"
+            onClick={() => setDualSarDemoOpen(false)}
+            title="Return to map"
+          >
+            <X className="size-3.5" />
+            Close Dual Demo
+          </Button>
+        </div>
+        <SARDualComparisonViewer className="h-full rounded-none border-0" />
+      </div>
+    );
+  }
+
   return (
     <div
       ref={viewportRef}
@@ -145,7 +177,9 @@ export function MapViewport() {
         <span className="text-muted-foreground/50">·</span>
         <div className="flex items-center gap-1">
           <span className="size-1.5 rounded-full bg-emerald-400 animate-ping" />
-          <span className="text-emerald-400 font-medium">T-{minutes}m {seconds < 10 ? `0${seconds}` : seconds}s</span>
+          <span className="text-emerald-400 font-medium">
+            T-{minutes}m {seconds < 10 ? `0${seconds}` : seconds}s
+          </span>
         </div>
       </div>
 
@@ -245,11 +279,18 @@ export function MapViewport() {
         <div className="pointer-events-none absolute left-3 bottom-3 z-[400] flex items-center gap-2.5 rounded-md border border-border/80 bg-background/90 px-2.5 py-1 font-mono text-[11px] text-muted-foreground shadow-xs backdrop-blur-xs">
           <Navigation className="size-3 text-sage shrink-0" />
           <span className="text-foreground font-medium">
-            {cursorCoords.lat >= 0 ? `${cursorCoords.lat.toFixed(4)}°N` : `${Math.abs(cursorCoords.lat).toFixed(4)}°S`},{" "}
-            {cursorCoords.lng >= 0 ? `${cursorCoords.lng.toFixed(4)}°E` : `${Math.abs(cursorCoords.lng).toFixed(4)}°W`}
+            {cursorCoords.lat >= 0
+              ? `${cursorCoords.lat.toFixed(4)}°N`
+              : `${Math.abs(cursorCoords.lat).toFixed(4)}°S`}
+            ,{" "}
+            {cursorCoords.lng >= 0
+              ? `${cursorCoords.lng.toFixed(4)}°E`
+              : `${Math.abs(cursorCoords.lng).toFixed(4)}°W`}
           </span>
           <span className="text-muted-foreground/50">·</span>
-          <span>ELEV: <strong className="text-sage">{cursorCoords.elev}m</strong> ASL</span>
+          <span>
+            ELEV: <strong className="text-sage">{cursorCoords.elev}m</strong> ASL
+          </span>
           <span className="text-muted-foreground/50">·</span>
           <span>SRTM-30</span>
         </div>
