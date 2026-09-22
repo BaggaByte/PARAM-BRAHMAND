@@ -16,9 +16,15 @@ Options:
     --demo-mission ID   Run a specific demo mission (kaziranga | joshimath | chambal | kuttanad)
 """
 
+import os
 import sys
 import argparse
 import time
+
+# Ensure workspace root is in sys.path
+_ROOT = os.path.dirname(os.path.abspath(__file__))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
 
 # Ensure UTF-8 output on all platforms (critical for Windows cp1252)
 if hasattr(sys.stdout, "reconfigure"):

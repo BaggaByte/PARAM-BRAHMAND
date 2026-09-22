@@ -74,3 +74,14 @@ omit = ["tests/*", "*/__pycache__/*"]
 [tool.coverage.report]
 show_missing = true
 fail_under = 80
+
+[tool.pyright]
+include = ["param_brahmand", "tests", "*.py"]
+exclude = [
+  "**/node_modules",
+  "**/__pycache__",
+  "src",
+  "dist",
+  ".vercel",
+]
+extraPaths = ["."]

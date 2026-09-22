@@ -1,0 +1,20 @@
+{
+  "include": [
+    "param_brahmand",
+    "tests",
+    "param_brahmand_complete_system.py",
+    "run_tests.py"
+  ],
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__",
+    "src",
+    "dist",
+    ".vercel"
+  ],
+  "extraPaths": [
+    "."
+  ],
+  "reportMissingImports": "warning",
+  "reportMissingTypeStubs": false
+}
