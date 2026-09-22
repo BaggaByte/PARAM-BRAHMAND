@@ -16,6 +16,7 @@ import { MissionDock } from "./mission-dock";
 import { QueryBar } from "./query-bar";
 import { ReportPanel } from "./report-panel";
 import { TopBar } from "./top-bar";
+import { LeftRail } from "./left-rail";
 
 export function AppShell() {
   const booted = useConsole((s) => s.booted);
@@ -38,9 +39,8 @@ export function AppShell() {
               defaultLayout={{ rail: 24, map: 46, report: 30 }}
             >
               <Panel id="rail" defaultSize="24%" minSize="18%" maxSize="32%" className="min-h-0">
-                <div className="flex h-full min-h-0 flex-col overflow-auto border-r border-border">
-                  <AgentRail />
-                  <LayerStack />
+                <div className="flex h-full min-h-0 flex-col border-r border-border">
+                  <LeftRail />
                 </div>
               </Panel>
               <ResizeHandle className="w-px bg-border hover:bg-sage" />
@@ -95,13 +95,12 @@ export function AppShell() {
           open={mobileSheet === "agents"}
           onOpenChange={(o) => setMobileSheet(o ? "agents" : null)}
         >
-          <SheetContent side="left" className="p-0">
-            <SheetHeader className="px-3 pt-4">
-              <SheetTitle>Navagraha</SheetTitle>
+          <SheetContent side="left" className="p-0 flex flex-col">
+            <SheetHeader className="px-3 pt-4 pb-3 border-b border-border">
+              <SheetTitle>Navigation</SheetTitle>
             </SheetHeader>
-            <div className="min-h-0 flex-1 overflow-auto">
-              <AgentRail />
-              <LayerStack />
+            <div className="min-h-0 flex-1">
+              <LeftRail />
             </div>
           </SheetContent>
         </Sheet>
@@ -110,9 +109,9 @@ export function AppShell() {
           open={mobileSheet === "report"}
           onOpenChange={(o) => setMobileSheet(o ? "report" : null)}
         >
-          <SheetContent side="bottom" className="p-0">
-            <SheetHeader className="px-3 pt-4">
-              <SheetTitle>Brief</SheetTitle>
+          <SheetContent side="bottom" className="p-0 flex flex-col max-h-[85vh]">
+            <SheetHeader className="px-3 pt-4 pb-3 border-b border-border">
+              <SheetTitle>Analysis Report</SheetTitle>
             </SheetHeader>
             <div className="min-h-0 flex-1 overflow-auto">
               <ReportPanel />

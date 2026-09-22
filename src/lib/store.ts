@@ -54,6 +54,13 @@ interface ConsoleState {
   setCursorCoords: (coords: { lat: number; lng: number; elev: number } | null) => void;
   isSpeaking: boolean;
   setIsSpeaking: (v: boolean) => void;
+  leftRailOpen: boolean;
+  setLeftRailOpen: (v: boolean) => void;
+  rightPanelOpen: boolean;
+  setRightPanelOpen: (v: boolean) => void;
+  leftRailTab: "agents" | "layers";
+  setLeftRailTab: (t: "agents" | "layers") => void;
+  toggleZenMode: () => void;
   submit: (text?: string, violationOverride?: PhysicsViolationType) => Promise<void>;
   loadMission: (id: MissionId) => Promise<void>;
   reset: () => void;
@@ -118,6 +125,21 @@ export const useConsole = create<ConsoleState>((set, get) => ({
   setCursorCoords: (coords) => set({ cursorCoords: coords }),
   isSpeaking: false,
   setIsSpeaking: (v) => set({ isSpeaking: v }),
+  leftRailOpen: true,
+  setLeftRailOpen: (v) => set({ leftRailOpen: v }),
+  rightPanelOpen: true,
+  setRightPanelOpen: (v) => set({ rightPanelOpen: v }),
+  leftRailTab: "agents",
+  setLeftRailTab: (t) => set({ leftRailTab: t }),
+  toggleZenMode: () => {
+    const s = get();
+    const isZen = !s.leftRailOpen && !s.rightPanelOpen;
+    if (isZen) {
+      set({ leftRailOpen: true, rightPanelOpen: true });
+    } else {
+      set({ leftRailOpen: false, rightPanelOpen: false });
+    }
+  },
   reset: () =>
     set({
       result: null,
@@ -168,6 +190,7 @@ export const useConsole = create<ConsoleState>((set, get) => ({
         zoom: result.zoom,
         flyNonce: get().flyNonce + 1,
         rightTab: violation !== "none" ? "firewall" : "report",
+        rightPanelOpen: true,
         swipe: 52,
       });
       persistQuery(q);

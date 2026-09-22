@@ -102,13 +102,22 @@ export function ReportPanel() {
         onValueChange={(v) => setTab(v as RightTab)}
         className="flex min-h-0 flex-1 flex-col"
       >
-        <div className="px-3 pt-3">
-          <div className="mb-2 flex items-center gap-2">
-            <TabsList className="flex-1 justify-start overflow-x-auto">
-              <TabsTrigger value="report">Brief &amp; SOP</TabsTrigger>
-              <TabsTrigger value="trace">Trace ({result?.trace.length ?? liveTrace.length})</TabsTrigger>
-              <TabsTrigger value="manifold">128-D Manifold</TabsTrigger>
-              <TabsTrigger value="firewall">Dharma Firewall</TabsTrigger>
+        <div className="shrink-0 border-b border-border px-3 pt-3 pb-2">
+          <div className="flex items-center gap-2">
+            <TabsList className="flex-1">
+              <TabsTrigger value="report" className="text-xs">
+                <FileText className="mr-1.5 size-3.5" />
+                Brief
+              </TabsTrigger>
+              <TabsTrigger value="trace" className="text-xs">
+                Trace ({result?.trace.length ?? liveTrace.length})
+              </TabsTrigger>
+              <TabsTrigger value="manifold" className="text-xs">
+                Manifold
+              </TabsTrigger>
+              <TabsTrigger value="firewall" className="text-xs">
+                Firewall
+              </TabsTrigger>
             </TabsList>
             {result && (
               <Button
@@ -163,6 +172,7 @@ function Brief() {
   const isSpeaking = useConsole((s) => s.isSpeaking);
   const setIsSpeaking = useConsole((s) => s.setIsSpeaking);
   const agent = AGENT_BY_ID[result.agent];
+  const [briefTab, setBriefTab] = useState<"summary" | "tactical" | "forensic">("summary");
 
   function copyText(text: string, label: string) {
     navigator.clipboard.writeText(text);
@@ -202,7 +212,7 @@ function Brief() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Printable ISRO SAC Letterhead (Active during window.print) */}
       <div className="hidden print:block border-b-2 border-black pb-4 mb-4 font-sans text-black">
         <div className="flex items-center justify-between">
@@ -235,7 +245,7 @@ function Brief() {
           <ExternalLink className="size-3 opacity-60 group-hover:opacity-100" />
         </button>
         <Badge variant={result.firewall.passed ? "pass" : "warn"}>
-          {result.firewall.passed ? "Firewall: PASSED (0% Hallucination)" : "Firewall: HALTED"}
+          {result.firewall.passed ? "Firewall: PASSED" : "Firewall: HALTED"}
         </Badge>
         <Badge variant="water">{formatNum(result.vqa.confidence * 100, 1)}% Conf.</Badge>
         <span className="font-mono text-xs text-muted-foreground">{result.latencyMs} ms</span>
@@ -273,7 +283,7 @@ function Brief() {
           className="h-7 gap-1.5 px-2.5 text-xs font-mono hover:border-sage/60 hover:text-sage cursor-pointer"
         >
           <Download className="size-3 text-sage" />
-          <span>GeoJSON Vector</span>
+          <span>GeoJSON</span>
         </Button>
         <Button
           variant="outline"
@@ -282,7 +292,7 @@ function Brief() {
           className="h-7 gap-1.5 px-2.5 text-xs font-mono hover:border-sage/60 hover:text-sage cursor-pointer"
         >
           <FileText className="size-3 text-sage" />
-          <span>ISRO SAC Memo (PDF)</span>
+          <span>Export PDF</span>
         </Button>
         <Button
           variant="ghost"
@@ -303,98 +313,113 @@ function Brief() {
         <p className="text-sm leading-relaxed font-medium text-foreground">{result.answer}</p>
       </div>
 
-      {/* Tier 1 · Brief */}
-      <section className="space-y-1">
-        <h3 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-          Tier 1 · Executive Brief
-        </h3>
-        <div className="rounded-md border border-border/80 bg-secondary/40 p-2.5 text-sm leading-relaxed text-foreground">
-          {result.report.t1}
-        </div>
-      </section>
+      {/* Nested Brief Tabs */}
+      <Tabs value={briefTab} onValueChange={(v) => setBriefTab(v as typeof briefTab)} className="space-y-3">
+        <TabsList className="w-full grid grid-cols-3">
+          <TabsTrigger value="summary" className="text-xs">Executive</TabsTrigger>
+          <TabsTrigger value="tactical" className="text-xs">Tactical</TabsTrigger>
+          <TabsTrigger value="forensic" className="text-xs">Forensic</TabsTrigger>
+        </TabsList>
 
-      {/* Tier 2 · Tactical Command */}
-      <section className="space-y-1">
-        <h3 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-          Tier 2 · Tactical Operations (NDMA/SDMA)
-        </h3>
-        <div className="rounded-md border border-border/80 bg-secondary/40 p-2.5 text-sm leading-relaxed text-muted-foreground">
-          {result.report.t2}
-        </div>
-      </section>
-
-      {/* Tactical NDMA/SDMA SOP Protocol Action Card */}
-      {result.ndmaSop && (
-        <section className="rounded-lg border border-hazard/40 bg-hazard/5 p-3 space-y-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-hazard font-semibold text-xs">
-              <ShieldAlert className="size-4" />
-              <span>NDMA / SDMA TACTICAL COMMAND PROTOCOL</span>
+        <TabsContent value="summary" className="mt-3 space-y-3">
+          {/* Tier 1 · Brief */}
+          <section className="space-y-1.5">
+            <h3 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              Tier 1 · Executive Brief
+            </h3>
+            <div className="rounded-md border border-border/80 bg-secondary/40 p-2.5 text-sm leading-relaxed text-foreground">
+              {result.report.t1}
             </div>
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 gap-1 px-2 text-xs"
-                onClick={() => copyText(result.ndmaSop!, "NDMA Tactical SOP")}
-              >
-                <Copy className="size-3" />
-                <span>Copy SOP</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 gap-1 px-2 text-xs"
-                onClick={() => window.print()}
-              >
-                <Printer className="size-3" />
-                <span>Print</span>
-              </Button>
+          </section>
+
+          {/* GeoCP-v2 Spatial Conformal Calibration Info */}
+          <div className="rounded-md border border-border bg-secondary/30 p-2.5 text-xs text-muted-foreground">
+            <div className="flex items-center justify-between font-mono text-[11px] text-foreground">
+              <span className="text-sage font-medium">GeoCP-v2 Conformal Calibration</span>
+              <span>Coverage: {formatNum(result.geocp.coverage * 100, 1)}%</span>
+            </div>
+            <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px]">
+              <span>ECE: {formatNum(result.geocp.ece * 100, 2)}%</span>
+              <span>Moran&apos;s I: {formatNum(result.geocp.moranI, 2)}</span>
+              <span>Zone: {result.geocp.zone}</span>
             </div>
           </div>
-          <pre className="overflow-x-auto whitespace-pre-wrap font-mono text-xs text-foreground/90 leading-relaxed bg-background/80 p-2.5 rounded-md border border-border">
-            {result.ndmaSop}
-          </pre>
-        </section>
-      )}
+        </TabsContent>
 
-      {/* Tier 3 · Forensic Inversion Trace */}
-      <section className="space-y-1">
-        <h3 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-          Tier 3 · Forensic Inversion Trace (GIS/Physics)
-        </h3>
-        <div className="rounded-md border border-border/80 bg-secondary/40 p-2.5 text-xs font-mono leading-relaxed text-muted-foreground">
-          {result.report.t3}
-        </div>
-      </section>
-
-      {/* Tier 4 · Telemetry Metrics */}
-      <section className="space-y-1.5">
-        <h3 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-          Tier 4 · Quantitative Telemetry
-        </h3>
-        <dl className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          {result.report.t4.map((row) => (
-            <div key={row.label} className="rounded-md border border-border bg-secondary/50 px-2.5 py-1.5">
-              <dt className="text-[11px] text-muted-foreground truncate">{row.label}</dt>
-              <dd className="font-mono text-xs font-semibold text-foreground truncate">{row.value}</dd>
+        <TabsContent value="tactical" className="mt-3 space-y-3">
+          {/* Tier 2 · Tactical Command */}
+          <section className="space-y-1.5">
+            <h3 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              Tier 2 · Tactical Operations (NDMA/SDMA)
+            </h3>
+            <div className="rounded-md border border-border/80 bg-secondary/40 p-2.5 text-sm leading-relaxed text-muted-foreground">
+              {result.report.t2}
             </div>
-          ))}
-        </dl>
-      </section>
+          </section>
 
-      {/* GeoCP-v2 Spatial Conformal Calibration Info */}
-      <div className="rounded-md border border-border bg-secondary/30 p-2.5 text-xs text-muted-foreground">
-        <div className="flex items-center justify-between font-mono text-[11px] text-foreground">
-          <span className="text-sage font-medium">GeoCP-v2 Conformal Calibration</span>
-          <span>Coverage: {formatNum(result.geocp.coverage * 100, 1)}%</span>
-        </div>
-        <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px]">
-          <span>ECE: {formatNum(result.geocp.ece * 100, 2)}%</span>
-          <span>Moran&apos;s I: {formatNum(result.geocp.moranI, 2)}</span>
-          <span>Zone: {result.geocp.zone}</span>
-        </div>
-      </div>
+          {/* Tactical NDMA/SDMA SOP Protocol Action Card */}
+          {result.ndmaSop && (
+            <section className="rounded-lg border border-hazard/40 bg-hazard/5 p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-hazard font-semibold text-xs">
+                  <ShieldAlert className="size-4" />
+                  <span>NDMA / SDMA TACTICAL PROTOCOL</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 gap-1 px-2 text-xs"
+                    onClick={() => copyText(result.ndmaSop!, "NDMA Tactical SOP")}
+                  >
+                    <Copy className="size-3" />
+                    <span>Copy</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 gap-1 px-2 text-xs"
+                    onClick={() => window.print()}
+                  >
+                    <Printer className="size-3" />
+                    <span>Print</span>
+                  </Button>
+                </div>
+              </div>
+              <pre className="overflow-x-auto whitespace-pre-wrap font-mono text-xs text-foreground/90 leading-relaxed bg-background/80 p-2.5 rounded-md border border-border">
+                {result.ndmaSop}
+              </pre>
+            </section>
+          )}
+        </TabsContent>
+
+        <TabsContent value="forensic" className="mt-3 space-y-3">
+          {/* Tier 3 · Forensic Inversion Trace */}
+          <section className="space-y-1.5">
+            <h3 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              Tier 3 · Forensic Inversion Trace (GIS/Physics)
+            </h3>
+            <div className="rounded-md border border-border/80 bg-secondary/40 p-2.5 text-xs font-mono leading-relaxed text-muted-foreground">
+              {result.report.t3}
+            </div>
+          </section>
+
+          {/* Tier 4 · Telemetry Metrics */}
+          <section className="space-y-1.5">
+            <h3 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              Tier 4 · Quantitative Telemetry
+            </h3>
+            <dl className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {result.report.t4.map((row) => (
+                <div key={row.label} className="rounded-md border border-border bg-secondary/50 px-2.5 py-1.5">
+                  <dt className="text-[11px] text-muted-foreground truncate">{row.label}</dt>
+                  <dd className="font-mono text-xs font-semibold text-foreground truncate">{row.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
@@ -448,12 +473,12 @@ function Manifold() {
   const channelValue = m[activeChannel] ?? 0;
 
   return (
-    <div className="space-y-4">
-      <div>
-        <p className="font-medium text-xs text-foreground">
+    <div className="space-y-3">
+      <div className="space-y-1">
+        <p className="font-medium text-sm text-foreground">
           Prakriti-Veda 128-D Invariant Physics Manifold
         </p>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-muted-foreground leading-relaxed">
           128-channel physical feature tensor divided into 4 specialized 32-channel invariant buckets.
           Hover or click any cell to inspect its exact mathematical derivation and sensor source.
         </p>
@@ -465,7 +490,7 @@ function Manifold() {
         <Stat k="MNDWI" v={formatNum(p.mndwi)} />
         <Stat k="OSWI" v={formatNum(p.oswi)} />
         <Stat k="Pd" v={formatNum(p.pd)} />
-        <Stat k="hv (Canopy)" v={`${formatNum(p.canopyHeightM, 1)}m`} />
+        <Stat k="hv" v={`${formatNum(p.canopyHeightM, 1)}m`} />
         <Stat k="σ⁰VV" v={`${formatNum(p.sigma0VvDb, 1)}dB`} />
       </div>
 
@@ -569,7 +594,7 @@ function Firewall() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Firewall Gate Status */}
       <div
         className={cn(
@@ -599,11 +624,11 @@ function Firewall() {
       </div>
 
       {/* The 4 Invariant Postulates */}
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
           Four Invariant Deterministic Postulates
         </p>
-        <ul className="space-y-2">
+        <ul className="space-y-1.5">
           {fw.postulates.map((x) => (
             <li key={x.id} className="rounded-md border border-border bg-card p-2.5">
               <div className="flex items-center justify-between gap-2">
