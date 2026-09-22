@@ -21,6 +21,11 @@ import { LeftRail } from "./left-rail";
 import { SoundManager } from "./sound-manager";
 import { OnboardingGuide } from "./onboarding-guide";
 import { WelcomeScreen } from "./welcome-screen";
+import { DemoMode } from "./demo-mode";
+import { LiveProcessingViz } from "./live-processing-viz";
+import { TechExplainer } from "./tech-explainer";
+import { AgentCardsSimple } from "./agent-cards-simple";
+import { JuryHelperMenu } from "./jury-helper-menu";
 
 export function AppShell() {
   const booted = useConsole((s) => s.booted);
@@ -55,6 +60,9 @@ export function AppShell() {
         {!booted && <BootScreen />}
         <SoundManager />
         <OnboardingGuide />
+        <DemoMode />
+        <LiveProcessingViz />
+        <JuryHelperMenu />
         <TopBar />
 
         <div className="flex min-h-0 flex-1">
