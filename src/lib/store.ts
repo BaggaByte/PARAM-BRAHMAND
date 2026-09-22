@@ -18,6 +18,8 @@ export type MobileSheet = "agents" | "report" | "missions" | null;
 interface ConsoleState {
   booted: boolean;
   setBooted: (v: boolean) => void;
+  introSplashOpen: boolean;
+  setIntroSplashOpen: (v: boolean) => void;
   language: LangCode;
   setLanguage: (l: LangCode) => void;
   query: string;
@@ -62,6 +64,26 @@ const INDIA: [number, number] = [22.97, 78.66];
 export const useConsole = create<ConsoleState>((set, get) => ({
   booted: false,
   setBooted: (v) => set({ booted: v }),
+  introSplashOpen: (() => {
+    try {
+      if (typeof window !== "undefined") {
+        return sessionStorage.getItem("pb.intro_seen") !== "1";
+      }
+    } catch {
+      /* ignore */
+    }
+    return false;
+  })(),
+  setIntroSplashOpen: (v) => {
+    if (!v) {
+      try {
+        sessionStorage.setItem("pb.intro_seen", "1");
+      } catch {
+        /* ignore */
+      }
+    }
+    set({ introSplashOpen: v });
+  },
   language: "en",
   setLanguage: (l) => set({ language: l }),
   query: "",

@@ -1,5 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { X } from "lucide-react";
+import { Play, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { LAYERS } from "@/lib/engine/agents";
 import { useConsole } from "@/lib/store";
 import { Mark } from "./logo";
@@ -7,6 +8,7 @@ import { Mark } from "./logo";
 export function AboutDialog() {
   const open = useConsole((s) => s.aboutOpen);
   const setOpen = useConsole((s) => s.setAboutOpen);
+  const setIntroSplashOpen = useConsole((s) => s.setIntroSplashOpen);
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -41,9 +43,24 @@ export function AboutDialog() {
               </li>
             ))}
           </ol>
-          <p className="mt-5 font-mono text-xs text-muted-foreground">
-            TensorTitans · Smart India Hackathon 2026 · keys 1–8 load missions · / focuses query
-          </p>
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setOpen(false);
+                setIntroSplashOpen(true);
+              }}
+              className="gap-2 text-xs"
+            >
+              <Play className="size-3.5 fill-current text-sage" />
+              Watch Intro Video
+            </Button>
+            <p className="font-mono text-xs text-muted-foreground">
+              Smart India Hackathon 2026 · PS 26167
+            </p>
+          </div>
           <Dialog.Close className="absolute right-3 top-3 rounded-sm p-1 text-muted-foreground hover:text-foreground">
             <X className="size-4" />
             <span className="sr-only">Close</span>

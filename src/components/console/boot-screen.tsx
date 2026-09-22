@@ -11,9 +11,12 @@ const EXTRA = [
 
 export function BootScreen() {
   const setBooted = useConsole((s) => s.setBooted);
+  const introSplashOpen = useConsole((s) => s.introSplashOpen);
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
+    if (introSplashOpen) return;
+
     try {
       if (sessionStorage.getItem("pb.booted") === "1") {
         setBooted(true);
@@ -44,7 +47,7 @@ export function BootScreen() {
       }
       setBooted(true);
     }
-  }, [setBooted]);
+  }, [setBooted, introSplashOpen]);
 
   return (
     <button
