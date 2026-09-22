@@ -43,6 +43,30 @@ export async function runPipeline(
   const geocp = mission?.geocp ?? geoCP(cover);
   const manifold = buildManifold(physics);
 
+  // Optional live Python FastAPI microservice synchronization
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 600);
+    fetch("http://127.0.0.1:8000/api/v1/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query: input.query,
+        language: input.language,
+        center: input.center,
+        zoom: input.zoom,
+        dem_slope_deg: physics.slopeDeg,
+        sigma0_vv_db: physics.sigma0VvDb,
+        albedo: physics.albedo,
+        predicted_class: physics.predictedClass,
+      }),
+      signal: controller.signal,
+    }).catch(() => {});
+    clearTimeout(timer);
+  } catch {
+    // Graceful autonomous fallback
+  }
+
   const trace: TraceStep[] = [];
   let tRel = 0;
 
