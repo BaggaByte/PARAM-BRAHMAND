@@ -166,30 +166,23 @@ export function MapViewport() {
         )}
       </MapBoundary>
 
-      {/* Satellite HUD + Coordinate bar — single row below top bar */}
-      <div className="pointer-events-none absolute left-3 top-[68px] z-[400] flex items-center gap-2 rounded-md border border-border/90 bg-background/90 px-2.5 py-1 font-mono text-[10.5px] shadow-xs backdrop-blur-md">
-        <Satellite className="size-3 text-sage shrink-0" />
-        <span className="text-sage font-semibold">{activeSat.name}</span>
-        <span className="text-muted-foreground/50">·</span>
-        <span className="text-muted-foreground hidden md:inline">{activeSat.sensor}</span>
-        <span className="text-muted-foreground/50 hidden md:inline">·</span>
-        <span className="size-1.5 rounded-full bg-emerald-400 animate-ping" />
-        <span className="text-emerald-400 font-medium">T-{minutes}m {seconds < 10 ? `0${seconds}` : seconds}s</span>
-        {result && (
-          <>
-            <span className="text-muted-foreground/50">·</span>
-            <span className="text-foreground font-semibold">{result.center[0].toFixed(3)}°N, {result.center[1].toFixed(3)}°E</span>
-            <span className="text-muted-foreground/50">·</span>
-            <span>GSD: {result.physics.gsdM.toFixed(1)}m</span>
-            <span className="text-muted-foreground/50">·</span>
-            <span className="text-sage font-medium">{result.mapMode.toUpperCase()}</span>
-          </>
-        )}
-        {!result && <><span className="text-muted-foreground/50">·</span><span>India Sensor Coverage · Standby</span></>}
-      </div>
+      {/* Satellite HUD — only shown when idle (no result) */}
+      {!result && (
+        <div className="pointer-events-none absolute left-3 top-[68px] z-[400] flex items-center gap-2 rounded-md border border-border/90 bg-background/90 px-2.5 py-1 font-mono text-[10.5px] shadow-xs backdrop-blur-md">
+          <Satellite className="size-3 text-sage shrink-0" />
+          <span className="text-sage font-semibold">{activeSat.name}</span>
+          <span className="text-muted-foreground/50">·</span>
+          <span className="text-muted-foreground hidden md:inline">{activeSat.sensor}</span>
+          <span className="text-muted-foreground/50 hidden md:inline">·</span>
+          <span className="size-1.5 rounded-full bg-emerald-400 animate-ping" />
+          <span className="text-emerald-400 font-medium">T-{minutes}m {seconds < 10 ? `0${seconds}` : seconds}s</span>
+          <span className="text-muted-foreground/50">·</span>
+          <span>India Sensor Coverage · Standby</span>
+        </div>
+      )}
 
-      {/* SAR Sub-mode Toggle — shown below satellite HUD on left side */}
-      {mapMode === "sar" && (
+      {/* SAR Sub-mode Toggle — only when idle */}
+      {mapMode === "sar" && !result && (
         <div className="absolute left-3 top-[96px] z-[400] flex rounded-md border border-border bg-background/90 p-0.5 shadow-xs backdrop-blur-xs font-mono text-[11px]">
           <button
             type="button"
@@ -218,8 +211,8 @@ export function MapViewport() {
         </div>
       )}
 
-      {/* SAR Pauli Legend when in Pauli RGB mode */}
-      {mapMode === "sar" && sarDisplayMode === "pauli_rgb" && (
+      {/* SAR Pauli Legend — only when idle */}
+      {mapMode === "sar" && sarDisplayMode === "pauli_rgb" && !result && (
         <div className="pointer-events-none absolute left-3 bottom-[220px] z-[400] rounded-md border border-border bg-background/90 px-3 py-1.5 font-mono text-[11px] shadow-xs backdrop-blur-xs">
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
             Pauli Polarimetric Decomposition
@@ -241,8 +234,8 @@ export function MapViewport() {
         </div>
       )}
 
-      {/* Live Cursor Crosshairs & DEM Elevation HUD */}
-      {cursorCoords && (
+      {/* Live Cursor Crosshairs — only when idle (no result) */}
+      {cursorCoords && !result && (
         <div className="pointer-events-none absolute left-3 bottom-[220px] z-[400] flex items-center gap-2.5 rounded-md border border-border/80 bg-background/90 px-2.5 py-1 font-mono text-[11px] text-muted-foreground shadow-xs backdrop-blur-xs">
           <Navigation className="size-3 text-sage shrink-0" />
           <span className="text-foreground font-medium">

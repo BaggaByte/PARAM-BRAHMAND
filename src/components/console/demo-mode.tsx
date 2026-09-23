@@ -22,6 +22,8 @@ export function DemoMode() {
   const loadMission = useConsole((s) => s.loadMission);
   const submit = useConsole((s) => s.submit);
   const setQuery = useConsole((s) => s.setQuery);
+  const result = useConsole((s) => s.result);
+  const running = useConsole((s) => s.running);
 
   const DEMO_STEPS: DemoStep[] = [
     {
@@ -145,7 +147,7 @@ export function DemoMode() {
   return (
     <>
       {/* Demo Control Button */}
-      {!isDemoActive && (
+      {!isDemoActive && !result && !running && (
         <Button
           onClick={startDemo}
           className="fixed top-1/2 -translate-y-1/2 left-4 z-[9000] shadow-xl bg-gradient-to-r from-sage to-emerald-600 text-white hover:from-sage/90 hover:to-emerald-600/90 gap-1.5 text-sm px-3 py-2 rounded-full"
