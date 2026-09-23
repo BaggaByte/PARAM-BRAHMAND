@@ -103,35 +103,35 @@ export function ReportPanel() {
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
       <Tabs
         value={tab}
         onValueChange={(v) => setTab(v as RightTab)}
-        className="flex min-h-0 flex-1 flex-col"
+        className="flex min-h-0 flex-1 flex-col overflow-hidden"
       >
-        <div className="shrink-0 border-b border-border px-3 pt-3 pb-2">
+        <div className="flex-shrink-0 border-b border-border px-3 pt-3 pb-2">
           <div className="flex items-center gap-2">
-            <TabsList className="flex-1">
-              <TabsTrigger value="report" className="text-xs">
+            <TabsList className="flex-1 h-9">
+              <TabsTrigger value="report" className="text-xs px-2">
                 <FileText className="mr-1.5 size-3.5" />
                 Brief
               </TabsTrigger>
-              <TabsTrigger value="trace" className="text-xs">
+              <TabsTrigger value="trace" className="text-xs px-2">
                 Trace ({result?.trace.length ?? liveTrace.length})
               </TabsTrigger>
-              <TabsTrigger value="manifold" className="text-xs">
+              <TabsTrigger value="manifold" className="text-xs px-2">
                 <Activity className="mr-1 size-3.5" />
                 Manifold
               </TabsTrigger>
-              <TabsTrigger value="telemetry" className="text-xs">
+              <TabsTrigger value="telemetry" className="text-xs px-2">
                 <TrendingUp className="mr-1 size-3.5" />
                 Live Data
               </TabsTrigger>
-              <TabsTrigger value="insights" className="text-xs">
+              <TabsTrigger value="insights" className="text-xs px-2">
                 <BarChart3 className="mr-1 size-3.5" />
                 Insights
               </TabsTrigger>
-              <TabsTrigger value="firewall" className="text-xs">
+              <TabsTrigger value="firewall" className="text-xs px-2">
                 Firewall
               </TabsTrigger>
             </TabsList>
@@ -141,7 +141,7 @@ export function ReportPanel() {
                 size="icon-sm"
                 title="Export mission brief as PDF"
                 aria-label="Export brief PDF"
-                className="shrink-0 no-print"
+                className="flex-shrink-0 no-print"
                 onClick={() => window.print()}
               >
                 <Printer className="size-3.5" />
@@ -149,25 +149,35 @@ export function ReportPanel() {
             )}
           </div>
         </div>
-        <div className="min-h-0 flex-1 overflow-auto px-3 pb-4">
-          <TabsContent value="report" className="mt-3">
-            {result ? <Brief /> : <Pending />}
+        <div className="flex-1 min-h-0 overflow-y-auto">
+          <TabsContent value="report" className="m-0 h-full">
+            <div className="px-3 py-4">
+              {result ? <Brief /> : <Pending />}
+            </div>
           </TabsContent>
-          <TabsContent value="trace" className="mt-3">
-            <TraceList />
-            {running && liveTrace.length === 0 && <Pending />}
+          <TabsContent value="trace" className="m-0 h-full">
+            <div className="px-3 py-4">
+              <TraceList />
+              {running && liveTrace.length === 0 && <Pending />}
+            </div>
           </TabsContent>
-          <TabsContent value="manifold" className="mt-3">
-            {result ? <Manifold3DViz /> : <Pending />}
+          <TabsContent value="manifold" className="m-0 h-full">
+            <div className="px-3 py-4">
+              {result ? <Manifold3DViz /> : <Pending />}
+            </div>
           </TabsContent>
-          <TabsContent value="telemetry" className="mt-3">
-            <LiveTelemetryCharts />
+          <TabsContent value="telemetry" className="m-0 h-full">
+            <div className="px-3 py-4">
+              <LiveTelemetryCharts />
+            </div>
           </TabsContent>
-          <TabsContent value="insights" className="mt-3">
+          <TabsContent value="insights" className="m-0 h-full">
             <InsightsPanel />
           </TabsContent>
-          <TabsContent value="firewall" className="mt-3">
-            {result ? <Firewall /> : <Pending />}
+          <TabsContent value="firewall" className="m-0 h-full">
+            <div className="px-3 py-4">
+              {result ? <Firewall /> : <Pending />}
+            </div>
           </TabsContent>
         </div>
       </Tabs>

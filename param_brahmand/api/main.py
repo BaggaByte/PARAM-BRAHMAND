@@ -42,10 +42,10 @@ if FASTAPI_AVAILABLE:
     )
 
     class AnalyzeRequest(BaseModel):
-        query: str = Field(..., example="क्या बाढ़ का पानी हाईवे तक पहुँच गया है?")
-        language: str = Field(default="hi", example="hi")
-        center: Optional[List[float]] = Field(default=[26.65, 93.35], example=[26.65, 93.35])
-        zoom: int = Field(default=13, example=13)
+        query: str = Field(..., examples=["क्या बाढ़ का पानी हाईवे तक पहुँच गया है?"])
+        language: str = Field(default="hi", examples=["hi"])
+        center: Optional[List[float]] = Field(default=[26.65, 93.35], examples=[[26.65, 93.35]])
+        zoom: int = Field(default=13, examples=[13])
         optical_bands: Optional[List[float]] = Field(default=None)
         sigma0_vv_db: float = Field(default=-14.2)
         sigma0_vh_db: float = Field(default=-21.5)
@@ -57,8 +57,8 @@ if FASTAPI_AVAILABLE:
         predicted_class: Optional[str] = Field(default=None)
 
     class FirewallRequest(BaseModel):
-        predicted_class: str = Field(..., example="standing_water")
-        dem_slope_deg: float = Field(..., example=8.5)
+        predicted_class: str = Field(..., examples=["standing_water"])
+        dem_slope_deg: float = Field(..., examples=[8.5])
         optical_mndwi: float = Field(default=0.45)
         sar_sigma0_vv_db: float = Field(default=-12.0)
         albedo: float = Field(default=0.15)

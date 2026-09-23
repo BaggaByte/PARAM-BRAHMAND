@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Layers, ScrollText } from "lucide-react";
-import { Group, Panel, Separator as ResizeHandle } from "react-resizable-panels";
 import { Toaster } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -8,10 +7,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useConsole } from "@/lib/store";
 import { AboutDialog } from "./about-dialog";
 import { AgentModal } from "./agent-modal";
-import { AgentRail } from "./agent-rail";
 import { BootScreen } from "./boot-screen";
 import { LayerModal } from "./layer-modal";
-import { LayerStack } from "./layer-stack";
 import { MapViewport } from "./map-viewport";
 import { MissionDock } from "./mission-dock";
 import { QueryBar } from "./query-bar";
@@ -23,16 +20,15 @@ import { OnboardingGuide } from "./onboarding-guide";
 import { WelcomeScreen } from "./welcome-screen";
 import { DemoMode } from "./demo-mode";
 import { LiveProcessingViz } from "./live-processing-viz";
-import { TechExplainer } from "./tech-explainer";
-import { AgentCardsSimple } from "./agent-cards-simple";
 import { JuryHelperMenu } from "./jury-helper-menu";
 
 export function AppShell() {
   const booted = useConsole((s) => s.booted);
   const mobileSheet = useConsole((s) => s.mobileSheet);
   const setMobileSheet = useConsole((s) => s.setMobileSheet);
+  const result = useConsole((s) => s.result);
+  const running = useConsole((s) => s.running);
   const [showWelcome, setShowWelcome] = useState(() => {
-    // Show welcome screen if user hasn't completed onboarding
     if (typeof window !== "undefined") {
       return !localStorage.getItem("pb.onboarding_completed");
     }
@@ -56,77 +52,72 @@ export function AppShell() {
 
   return (
     <TooltipProvider delayDuration={250}>
-      <div className="flex h-dvh flex-col bg-background text-foreground">
+      <div className="relative flex h-dvh w-screen flex-col overflow-hidden bg-background text-foreground">
         {!booted && <BootScreen />}
         <SoundManager />
         <OnboardingGuide />
         <DemoMode />
-        <LiveProcessingViz />
         <JuryHelperMenu />
-        <TopBar />
 
-        <div className="flex min-h-0 flex-1">
-          {/* Desktop instrument layout */}
-          <div className="hidden min-h-0 min-w-0 flex-1 md:flex">
-            <Group
-              id="console-group"
-              orientation="horizontal"
-              className="h-full w-full"
-              defaultLayout={{ rail: 24, map: 46, report: 30 }}
-            >
-              <Panel id="rail" defaultSize="24%" minSize="18%" maxSize="32%" className="min-h-0">
-                <div className="flex h-full min-h-0 flex-col border-r border-border">
-                  <LeftRail />
-                </div>
-              </Panel>
-              <ResizeHandle className="w-px bg-border hover:bg-sage" />
-              <Panel id="map" defaultSize="46%" minSize="35%" className="min-h-0">
-                <MapViewport />
-              </Panel>
-              <ResizeHandle className="w-px bg-border hover:bg-sage" />
-              <Panel id="report" defaultSize="30%" minSize="24%" maxSize="40%" className="min-h-0">
-                <div className="h-full min-h-0 overflow-hidden border-l border-border">
-                  <ReportPanel />
-                </div>
-              </Panel>
-            </Group>
-          </div>
-
-          {/* Mobile: map first */}
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col md:hidden">
-            <div className="min-h-0 flex-1">
-              <MapViewport />
-            </div>
+        {/* Floating Top Bar */}
+        <div className="absolute left-0 top-0 z-40 w-full pointer-events-none">
+          <div className="pointer-events-auto">
+            <TopBar />
           </div>
         </div>
 
-        <footer className="shrink-0 border-t border-border bg-background px-3 py-2.5 md:px-4">
-          <div className="mb-2 flex items-center gap-2">
-            <div className="min-w-0 flex-1">
+        {/* Fullscreen Interactive Map Layer */}
+        <div className="absolute inset-0 z-0">
+          <MapViewport />
+        </div>
+
+        {/* Live processing overlay */}
+        <div className="absolute inset-0 z-30 pointer-events-none flex items-center justify-center">
+          <LiveProcessingViz />
+        </div>
+
+        {/* Results Slide-over Panel */}
+        <div
+          className={`absolute right-4 top-20 z-20 w-[420px] bottom-32 max-h-full transition-transform duration-500 ease-out ${
+            result && !running ? "translate-x-0 opacity-100 pointer-events-auto" : "translate-x-full opacity-0 pointer-events-none"
+          }`}
+        >
+          <div className="h-full rounded-2xl border border-border/50 bg-background/80 backdrop-blur-xl shadow-2xl overflow-hidden glass-morphism">
+            <ReportPanel />
+          </div>
+        </div>
+
+        {/* Floating Query Command Center at Bottom */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-3xl px-4 pointer-events-none">
+          <div className="pointer-events-auto rounded-3xl border border-white/10 bg-background/60 p-4 backdrop-blur-2xl shadow-2xl glass-morphism">
+            <div className="mb-3">
               <MissionDock />
             </div>
-            <div className="flex shrink-0 gap-1 md:hidden">
-              <Button
-                variant="outline"
-                size="icon-sm"
-                aria-label="Agents"
-                onClick={() => setMobileSheet("agents")}
-              >
-                <Layers className="size-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon-sm"
-                aria-label="Brief"
-                onClick={() => setMobileSheet("report")}
-              >
-                <ScrollText className="size-4" />
-              </Button>
-            </div>
+            <QueryBar />
           </div>
-          <QueryBar />
-        </footer>
+        </div>
 
+        {/* Mobile controls */}
+        <div className="absolute bottom-32 right-4 z-40 flex flex-col gap-2 md:hidden pointer-events-none">
+          <Button
+            variant="outline"
+            size="icon"
+            className="rounded-full bg-background/80 backdrop-blur pointer-events-auto shadow-lg"
+            onClick={() => setMobileSheet("agents")}
+          >
+            <Layers className="size-5" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="rounded-full bg-background/80 backdrop-blur pointer-events-auto shadow-lg"
+            onClick={() => setMobileSheet("report")}
+          >
+            <ScrollText className="size-5" />
+          </Button>
+        </div>
+
+        {/* Mobile Sheets */}
         <Sheet
           open={mobileSheet === "agents"}
           onOpenChange={(o) => setMobileSheet(o ? "agents" : null)}
@@ -158,12 +149,13 @@ export function AppShell() {
         <AboutDialog />
         <AgentModal />
         <LayerModal />
+        
         <Toaster
           theme="dark"
-          position="bottom-right"
+          position="top-center"
           toastOptions={{
             classNames: {
-              toast: "bg-card text-foreground border-border font-sans",
+              toast: "bg-card text-foreground border-border font-sans rounded-xl shadow-xl",
             },
           }}
         />

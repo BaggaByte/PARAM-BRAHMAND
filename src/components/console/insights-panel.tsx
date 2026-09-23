@@ -70,25 +70,29 @@ export function InsightsPanel() {
   const physicsScore = firewall?.physicsIntegrityScore || 0;
 
   return (
-    <div className="h-full overflow-y-auto p-4 space-y-4">
+    <div className="flex h-full flex-col overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-bold text-foreground">Analysis Insights</h2>
-          <p className="text-xs text-muted-foreground">
-            Detailed metrics and performance data
-          </p>
+      <div className="flex-shrink-0 px-4 py-3 border-b border-border">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold text-foreground">Analysis Insights</h2>
+            <p className="text-xs text-muted-foreground">
+              Detailed metrics and performance data
+            </p>
+          </div>
+          <Badge variant="outline" className="border-sage text-sage">
+            Live
+          </Badge>
         </div>
-        <Badge variant="outline" className="border-sage text-sage">
-          Live
-        </Badge>
       </div>
 
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
       {/* Current Query Performance */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-xl border-2 border-border bg-card p-4 space-y-4"
+        className="rounded-xl border-2 border-border bg-card p-4 space-y-3"
       >
         <h3 className="text-sm font-semibold flex items-center gap-2">
           <Activity className="size-4 text-sage" />
@@ -96,7 +100,7 @@ export function InsightsPanel() {
         </h3>
 
         {/* Confidence Score */}
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
               <Brain className="size-3.5 text-blue-500" />
@@ -111,7 +115,7 @@ export function InsightsPanel() {
         </div>
 
         {/* Response Time */}
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
               <Zap className="size-3.5 text-yellow-500" />
@@ -126,7 +130,7 @@ export function InsightsPanel() {
         </div>
 
         {/* Physics Integrity */}
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
               <Shield className="size-3.5 text-sage" />
@@ -333,11 +337,12 @@ export function InsightsPanel() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="rounded-lg bg-sage/10 border border-sage/30 p-3 text-center text-xs text-muted-foreground"
+        className="rounded-lg bg-sage/10 border border-sage/30 p-3 text-center text-xs text-muted-foreground mb-4"
       >
         <strong className="text-sage">Note:</strong> All metrics are real-time and verified by
         physics laws. This ensures 100% accuracy with zero hallucination.
       </motion.div>
+      </div>
     </div>
   );
 }

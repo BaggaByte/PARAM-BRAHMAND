@@ -1,43 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;500;600&family=Fira+Code:wght@400;500&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Syne", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-sans: "Inter", "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Fira Code", ui-monospace, SFMono-Regular, monospace;
 
-  --color-background: #09090b;
-  --color-foreground: #e8e6e1;
-  --color-card: #121214;
-  --color-card-foreground: #e8e6e1;
-  --color-popover: #161618;
-  --color-popover-foreground: #e8e6e1;
-  --color-primary: #d8d4cc;
-  --color-primary-foreground: #09090b;
-  --color-secondary: #1a1a1e;
-  --color-secondary-foreground: #e8e6e1;
-  --color-muted: #1a1a1e;
-  --color-muted-foreground: #8a8880;
-  --color-accent: #1c1e1c;
-  --color-accent-foreground: #e8e6e1;
-  --color-destructive: #c45c4a;
-  --color-destructive-foreground: #f4eeea;
-  --color-border: #26262b;
-  --color-input: #2a2a30;
-  --color-ring: #d8d4cc;
-  --color-water: #5b9aa0;
-  --color-veg: #6b8f71;
-  --color-hazard: #c45c4a;
-  --color-radar: #7d8894;
-  --color-sage: #7a9e8a;
-  --color-paper: #e8e6e1;
-  --color-ink: #09090b;
+  /* Premium Deep Dark Mode */
+  --color-background: #040509; /* Deep space black */
+  --color-foreground: #f0f2f5;
+  --color-card: rgba(14, 16, 23, 0.6); /* Translucent for glassmorphism */
+  --color-card-foreground: #f0f2f5;
+  --color-popover: rgba(10, 12, 18, 0.8);
+  --color-popover-foreground: #f0f2f5;
+  --color-primary: #00d2ff; /* Cyber cyan */
+  --color-primary-foreground: #040509;
+  --color-secondary: rgba(30, 34, 46, 0.5);
+  --color-secondary-foreground: #f0f2f5;
+  --color-muted: rgba(30, 34, 46, 0.5);
+  --color-muted-foreground: #9ba1a6;
+  --color-accent: #7b2cbf; /* Deep purple */
+  --color-accent-foreground: #f0f2f5;
+  --color-destructive: #ff3366;
+  --color-destructive-foreground: #ffffff;
+  --color-border: rgba(45, 55, 72, 0.3);
+  --color-input: rgba(20, 24, 32, 0.6);
+  --color-ring: #00d2ff;
+  --color-water: #00f2fe;
+  --color-veg: #00ff87;
+  --color-hazard: #ff3366;
+  --color-radar: #b5179e;
+  --color-sage: #00d2ff; /* Map sage to our primary cyan */
+  --color-paper: #f0f2f5;
+  --color-ink: #040509;
 
   --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 24px;
-  --radius: 8px;
+  --radius: 12px;
 
   --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
 }

@@ -124,7 +124,7 @@ export function QueryBar() {
       )}
 
       <form
-        className="flex items-center gap-2"
+        className="flex items-center gap-3 bg-card/40 p-2 rounded-3xl border border-white/10 shadow-inner backdrop-blur-md"
         onSubmit={(e) => {
           e.preventDefault();
           void submit();
@@ -138,32 +138,38 @@ export function QueryBar() {
             placeholder={hint}
             aria-label="Satellite query"
             disabled={running}
-            className="h-11 flex-1 pr-14 font-sans text-sm border-border/80 focus-visible:ring-sage"
+            className="h-12 md:h-14 w-full bg-transparent border-none px-4 md:px-6 font-sans text-base md:text-lg text-foreground placeholder:text-muted-foreground/60 focus-visible:ring-0 shadow-none"
           />
-          <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 font-mono text-[10px] text-muted-foreground/60 hidden sm:inline">
+          <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 font-mono text-xs text-muted-foreground/40 hidden sm:inline">
             Press / to search
           </span>
         </div>
-        <Button
-          type="button"
-          variant={listening ? "default" : "outline"}
-          size="icon"
-          onClick={toggleMic}
-          aria-label={listening ? "Stop listening" : "Voice query"}
-          title={listening ? "Stop listening" : "Vernacular voice query (AI4Bharat VIVA)"}
-          className={listening ? "bg-sage text-background hover:bg-sage/90 ring-2 ring-sage animate-pulse" : ""}
-        >
-          {listening ? <MicOff className="size-4" /> : <Mic className="size-4" />}
-        </Button>
-        <Button
-          type="submit"
-          size="icon"
-          disabled={running || !query.trim()}
-          aria-label="Run query"
-          className="bg-sage text-background hover:bg-sage/90"
-        >
-          <Send className="size-4" />
-        </Button>
+        <div className="flex shrink-0 items-center gap-2 pr-2">
+          <Button
+            type="button"
+            variant={listening ? "default" : "ghost"}
+            size="icon"
+            onClick={toggleMic}
+            aria-label={listening ? "Stop listening" : "Voice query"}
+            title={listening ? "Stop listening" : "Vernacular voice query (AI4Bharat VIVA)"}
+            className={`rounded-full size-10 md:size-12 transition-all ${
+              listening 
+                ? "bg-sage text-background hover:bg-sage/90 ring-4 ring-sage/30 animate-pulse" 
+                : "text-muted-foreground hover:bg-white/10 hover:text-foreground"
+            }`}
+          >
+            {listening ? <MicOff className="size-5" /> : <Mic className="size-5" />}
+          </Button>
+          <Button
+            type="submit"
+            size="icon"
+            disabled={running || !query.trim()}
+            aria-label="Run query"
+            className="rounded-full size-10 md:size-12 bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/25 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
+          >
+            <Send className="size-5" />
+          </Button>
+        </div>
       </form>
 
       {/* Vernacular Quick Suggestion Chips */}
