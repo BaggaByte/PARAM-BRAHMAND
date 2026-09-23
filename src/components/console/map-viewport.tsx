@@ -166,94 +166,61 @@ export function MapViewport() {
         )}
       </MapBoundary>
 
-      {/* Satellite Orbit Ground Track HUD */}
-      <div className="pointer-events-auto absolute left-3 top-11.5 z-[400] hidden sm:flex items-center gap-2 rounded-md border border-border/90 bg-background/90 px-2.5 py-1 font-mono text-[10.5px] shadow-xs backdrop-blur-md">
-        <div className="flex items-center gap-1.5 text-sage font-semibold">
-          <Satellite className="size-3 text-sage shrink-0" />
-          <span>{activeSat.name}</span>
-        </div>
+      {/* Satellite HUD + Coordinate bar — single row below top bar */}
+      <div className="pointer-events-none absolute left-3 top-[68px] z-[400] flex items-center gap-2 rounded-md border border-border/90 bg-background/90 px-2.5 py-1 font-mono text-[10.5px] shadow-xs backdrop-blur-md">
+        <Satellite className="size-3 text-sage shrink-0" />
+        <span className="text-sage font-semibold">{activeSat.name}</span>
         <span className="text-muted-foreground/50">·</span>
-        <span className="text-muted-foreground">{activeSat.sensor}</span>
-        <span className="text-muted-foreground/50">·</span>
-        <div className="flex items-center gap-1">
-          <span className="size-1.5 rounded-full bg-emerald-400 animate-ping" />
-          <span className="text-emerald-400 font-medium">
-            T-{minutes}m {seconds < 10 ? `0${seconds}` : seconds}s
-          </span>
-        </div>
-      </div>
-
-      {/* Top Left Coordinate & Sensor Telemetry */}
-      <div className="pointer-events-none absolute left-3 top-3 z-[400] rounded-md border border-border bg-background/90 px-3 py-1.5 font-mono text-xs text-muted-foreground shadow-xs backdrop-blur-xs">
-        {result ? (
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-foreground">
-              {result.center[0].toFixed(3)}°N, {result.center[1].toFixed(3)}°E
-            </span>
-            <span>·</span>
+        <span className="text-muted-foreground hidden md:inline">{activeSat.sensor}</span>
+        <span className="text-muted-foreground/50 hidden md:inline">·</span>
+        <span className="size-1.5 rounded-full bg-emerald-400 animate-ping" />
+        <span className="text-emerald-400 font-medium">T-{minutes}m {seconds < 10 ? `0${seconds}` : seconds}s</span>
+        {result && (
+          <>
+            <span className="text-muted-foreground/50">·</span>
+            <span className="text-foreground font-semibold">{result.center[0].toFixed(3)}°N, {result.center[1].toFixed(3)}°E</span>
+            <span className="text-muted-foreground/50">·</span>
             <span>GSD: {result.physics.gsdM.toFixed(1)}m</span>
-            <span>·</span>
+            <span className="text-muted-foreground/50">·</span>
             <span className="text-sage font-medium">{result.mapMode.toUpperCase()}</span>
-          </div>
-        ) : (
-          <span>India Sensor Coverage · Standby</span>
+          </>
         )}
+        {!result && <><span className="text-muted-foreground/50">·</span><span>India Sensor Coverage · Standby</span></>}
       </div>
 
-      {/* Top Right Sensor Mode Switcher */}
-      <div className="absolute right-3 top-3 z-[400] flex flex-col items-end gap-1.5">
-        <div className="flex rounded-md border border-border bg-background/90 p-0.5 shadow-xs backdrop-blur-xs">
-          {(["optical", "sar", "dem"] as const).map((m) => (
-            <button
-              key={m}
-              type="button"
-              onClick={() => setMapMode(m)}
-              className={cn(
-                "rounded-xs px-2.5 py-1 font-mono text-xs uppercase font-medium transition-colors cursor-pointer",
-                mapMode === m
-                  ? "bg-sage text-background shadow-xs font-bold"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {m}
-            </button>
-          ))}
+      {/* SAR Sub-mode Toggle — shown below satellite HUD on left side */}
+      {mapMode === "sar" && (
+        <div className="absolute left-3 top-[96px] z-[400] flex rounded-md border border-border bg-background/90 p-0.5 shadow-xs backdrop-blur-xs font-mono text-[11px]">
+          <button
+            type="button"
+            onClick={() => setSarDisplayMode("intensity")}
+            className={cn(
+              "rounded-xs px-2 py-0.5 transition-colors cursor-pointer",
+              sarDisplayMode === "intensity"
+                ? "bg-secondary text-foreground font-semibold"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            σ⁰ Intensity
+          </button>
+          <button
+            type="button"
+            onClick={() => setSarDisplayMode("pauli_rgb")}
+            className={cn(
+              "rounded-xs px-2 py-0.5 transition-colors cursor-pointer",
+              sarDisplayMode === "pauli_rgb"
+                ? "bg-sage text-background font-semibold"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            Pauli RGB
+          </button>
         </div>
-
-        {/* SAR Sub-mode Toggle (Polarimetric Pauli RGB vs Grayscale Intensity) */}
-        {mapMode === "sar" && (
-          <div className="flex rounded-md border border-border bg-background/90 p-0.5 shadow-xs backdrop-blur-xs font-mono text-[11px]">
-            <button
-              type="button"
-              onClick={() => setSarDisplayMode("intensity")}
-              className={cn(
-                "rounded-xs px-2 py-0.5 transition-colors cursor-pointer",
-                sarDisplayMode === "intensity"
-                  ? "bg-secondary text-foreground font-semibold"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              σ⁰ Intensity
-            </button>
-            <button
-              type="button"
-              onClick={() => setSarDisplayMode("pauli_rgb")}
-              className={cn(
-                "rounded-xs px-2 py-0.5 transition-colors cursor-pointer",
-                sarDisplayMode === "pauli_rgb"
-                  ? "bg-sage text-background font-semibold"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              Pauli RGB (Pd/Pv/Ps)
-            </button>
-          </div>
-        )}
-      </div>
+      )}
 
       {/* SAR Pauli Legend when in Pauli RGB mode */}
       {mapMode === "sar" && sarDisplayMode === "pauli_rgb" && (
-        <div className="pointer-events-none absolute left-3 bottom-14 z-[400] rounded-md border border-border bg-background/90 px-3 py-1.5 font-mono text-[11px] shadow-xs backdrop-blur-xs">
+        <div className="pointer-events-none absolute left-3 bottom-[220px] z-[400] rounded-md border border-border bg-background/90 px-3 py-1.5 font-mono text-[11px] shadow-xs backdrop-blur-xs">
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
             Pauli Polarimetric Decomposition
           </div>
@@ -276,7 +243,7 @@ export function MapViewport() {
 
       {/* Live Cursor Crosshairs & DEM Elevation HUD */}
       {cursorCoords && (
-        <div className="pointer-events-none absolute left-3 bottom-3 z-[400] flex items-center gap-2.5 rounded-md border border-border/80 bg-background/90 px-2.5 py-1 font-mono text-[11px] text-muted-foreground shadow-xs backdrop-blur-xs">
+        <div className="pointer-events-none absolute left-3 bottom-[220px] z-[400] flex items-center gap-2.5 rounded-md border border-border/80 bg-background/90 px-2.5 py-1 font-mono text-[11px] text-muted-foreground shadow-xs backdrop-blur-xs">
           <Navigation className="size-3 text-sage shrink-0" />
           <span className="text-foreground font-medium">
             {cursorCoords.lat >= 0

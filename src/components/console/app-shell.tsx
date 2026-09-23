@@ -78,7 +78,7 @@ export function AppShell() {
 
         {/* Results Slide-over Panel */}
         <div
-          className={`absolute right-4 top-20 z-20 w-[420px] bottom-32 max-h-full transition-transform duration-500 ease-out ${
+          className={`absolute right-4 top-20 z-20 w-[min(420px,calc(100vw-2rem))] bottom-44 max-h-full transition-transform duration-500 ease-out ${
             result && !running ? "translate-x-0 opacity-100 pointer-events-auto" : "translate-x-full opacity-0 pointer-events-none"
           }`}
         >
@@ -88,9 +88,9 @@ export function AppShell() {
         </div>
 
         {/* Floating Query Command Center at Bottom */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-3xl px-4 pointer-events-none">
-          <div className="pointer-events-auto rounded-3xl border border-white/10 bg-background/60 p-4 backdrop-blur-2xl shadow-2xl glass-morphism">
-            <div className="mb-3">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-40 w-full max-w-3xl px-4 pointer-events-none">
+          <div className="pointer-events-auto rounded-3xl border border-white/10 bg-background/70 p-3 backdrop-blur-2xl shadow-2xl">
+            <div className="mb-2">
               <MissionDock />
             </div>
             <QueryBar />
@@ -98,7 +98,7 @@ export function AppShell() {
         </div>
 
         {/* Mobile controls */}
-        <div className="absolute bottom-32 right-4 z-40 flex flex-col gap-2 md:hidden pointer-events-none">
+        <div className="absolute bottom-44 right-4 z-40 flex flex-col gap-2 md:hidden pointer-events-none">
           <Button
             variant="outline"
             size="icon"

@@ -148,11 +148,10 @@ export function DemoMode() {
       {!isDemoActive && (
         <Button
           onClick={startDemo}
-          className="fixed bottom-20 right-6 z-[9000] shadow-2xl bg-gradient-to-r from-sage to-emerald-600 text-white hover:from-sage/90 hover:to-emerald-600/90 gap-2 text-base px-6 py-6 rounded-full animate-pulse"
+          className="fixed top-1/2 -translate-y-1/2 left-4 z-[9000] shadow-xl bg-gradient-to-r from-sage to-emerald-600 text-white hover:from-sage/90 hover:to-emerald-600/90 gap-1.5 text-sm px-3 py-2 rounded-full"
         >
-          <Play className="size-5" />
-          <span className="font-semibold">Start Live Demo</span>
-          <Sparkles className="size-4" />
+          <Play className="size-4" />
+          <span className="font-semibold hidden sm:inline">Live Demo</span>
         </Button>
       )}
 
@@ -280,7 +279,7 @@ export function DemoMode() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9000] flex gap-2"
+              className="fixed top-[340px] left-1/2 -translate-x-1/2 z-[9000] flex gap-2"
             >
               {DEMO_STEPS.map((_, index) => (
                 <button

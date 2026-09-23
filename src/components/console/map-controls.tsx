@@ -67,8 +67,8 @@ export function MapControls() {
 
   return (
     <>
-      {/* Top-Right Controls */}
-      <div className="absolute top-4 right-4 z-[400] flex flex-col gap-2">
+      {/* Top-Right Controls — below top bar */}
+      <div className="absolute top-[68px] right-4 z-[400] flex flex-col gap-2">
         {/* Map Mode Selector */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
@@ -158,112 +158,65 @@ export function MapControls() {
         </motion.div>
       </div>
 
-      {/* Bottom-Left Info Box */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="absolute bottom-4 left-4 z-[400] rounded-lg border-2 border-border bg-background/95 backdrop-blur-sm shadow-lg p-3 max-w-xs"
-      >
-        <div className="flex items-start gap-3">
-          <div className="p-2 rounded-lg bg-sage/10">
-            <MapPin className="size-4 text-sage" />
+      {/* Bottom-Left Status Pill — compact, doesn't overlap query bar */}
+      <div className="absolute bottom-[210px] left-3 z-[400] flex flex-col gap-1.5">
+        {/* How to Use Map — only when no result */}
+        {!result && (
+          <div className="flex items-center gap-2 rounded-full border border-border/80 bg-background/90 backdrop-blur-sm px-3 py-1.5 text-xs text-muted-foreground shadow-sm">
+            <MapPin className="size-3 text-sage shrink-0" />
+            <span>Click a pin · drag to pan · scroll to zoom</span>
           </div>
-          <div className="flex-1 min-w-0 space-y-2">
-            {/* Map Instructions */}
-            {!result && (
-              <div className="space-y-1">
-                <h4 className="text-xs font-semibold text-foreground">How to Use Map:</h4>
-                <ul className="text-xs text-muted-foreground space-y-0.5">
-                  <li>• Click any pulsing pin to load mission</li>
-                  <li>• Drag to pan, scroll to zoom</li>
-                  <li>• Switch views using mode selector</li>
-                </ul>
-              </div>
-            )}
-
-            {/* Cursor Coordinates */}
-            {cursorCoords && (
-              <div className="space-y-1">
-                <h4 className="text-xs font-semibold text-foreground">Current Position:</h4>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div>
-                    <span className="text-muted-foreground">Lat:</span>{" "}
-                    <span className="font-mono text-sage">{cursorCoords.lat}°</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Lon:</span>{" "}
-                    <span className="font-mono text-sage">{cursorCoords.lng}°</span>
-                  </div>
-                  <div className="col-span-2">
-                    <span className="text-muted-foreground">Elevation:</span>{" "}
-                    <span className="font-mono text-sage">{cursorCoords.elev}m</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Map Mode Badge */}
-            <div className="flex items-center gap-2 pt-1">
-              <Badge variant="outline" className="border-sage/40 text-sage text-xs">
-                {currentMode?.label}
-              </Badge>
-              {mapMode === "sar" && (
-                <span className="text-xs text-muted-foreground">All-weather radar</span>
-              )}
-              {mapMode === "thermal" && (
-                <span className="text-xs text-muted-foreground">Heat/fire detection</span>
-              )}
-            </div>
+        )}
+        {/* Cursor Coordinates — compact pill */}
+        {cursorCoords && (
+          <div className="flex items-center gap-2 rounded-full border border-border/80 bg-background/90 backdrop-blur-sm px-3 py-1.5 font-mono text-xs text-muted-foreground shadow-sm">
+            <span className="text-sage font-semibold">{cursorCoords.lat}&deg; N</span>
+            <span className="text-muted-foreground/40">,</span>
+            <span className="text-sage font-semibold">{cursorCoords.lng}&deg; E</span>
+            <span className="text-muted-foreground/40">·</span>
+            <span>{cursorCoords.elev}m</span>
           </div>
+        )}
+        {/* Mode badge */}
+        <div className="flex items-center gap-1.5 rounded-full border border-border/80 bg-background/90 backdrop-blur-sm px-3 py-1 text-xs shadow-sm">
+          <Badge variant="outline" className="border-sage/40 text-sage text-[10px] py-0 px-1.5">
+            {currentMode?.label}
+          </Badge>
+          {mapMode === "sar" && <span className="text-muted-foreground">All-weather radar</span>}
+          {mapMode === "thermal" && <span className="text-muted-foreground">Heat detection</span>}
+          {mapMode === "dem" && <span className="text-muted-foreground">Terrain elevation</span>}
+          {mapMode === "optical" && <span className="text-muted-foreground">True color</span>}
         </div>
-      </motion.div>
+      </div>
 
-      {/* Map Legend (when results are shown) */}
+      {/* Map Legend (when results are shown) — below satellite HUD */}
       {result && (
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="absolute top-4 left-4 z-[400] rounded-lg border-2 border-border bg-background/95 backdrop-blur-sm shadow-lg p-3 max-w-xs"
+          className="absolute top-[120px] left-3 z-[400] rounded-lg border border-border bg-background/95 backdrop-blur-sm shadow-lg p-2.5 w-44"
         >
-          <div className="flex items-center gap-2 mb-2">
-            <Info className="size-4 text-sage" />
-            <h4 className="text-xs font-semibold">Map Legend</h4>
+          <div className="flex items-center gap-1.5 mb-2">
+            <Info className="size-3 text-sage" />
+            <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Map Legend</h4>
           </div>
-          <div className="space-y-1.5 text-xs">
-            <div className="flex items-center gap-2">
-              <div className="size-3 rounded-full bg-[#5b9aa0]" />
-              <span className="text-muted-foreground">Flood / Water body</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="size-3 rounded-full bg-[#7a9e8a]" />
-              <span className="text-muted-foreground">Canopy flood (hidden)</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="size-3 rounded-full bg-[#c45c4a]" />
-              <span className="text-muted-foreground">Subsidence / Hazard</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="size-3 rounded-full bg-[#4a7c59]" />
-              <span className="text-muted-foreground">Forest / Mangrove</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="size-3 rounded-full bg-[#f97316]" />
-              <span className="text-muted-foreground">Fire / Thermal hotspot</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="size-3 rounded-full bg-[#eab308]" />
-              <span className="text-muted-foreground">Mineral / Resource</span>
-            </div>
+          <div className="space-y-1 text-xs">
+            <div className="flex items-center gap-2"><div className="size-2.5 rounded-full bg-[#5b9aa0]" /><span className="text-muted-foreground">Flood / Water</span></div>
+            <div className="flex items-center gap-2"><div className="size-2.5 rounded-full bg-[#7a9e8a]" /><span className="text-muted-foreground">Canopy flood</span></div>
+            <div className="flex items-center gap-2"><div className="size-2.5 rounded-full bg-[#c45c4a]" /><span className="text-muted-foreground">Subsidence</span></div>
+            <div className="flex items-center gap-2"><div className="size-2.5 rounded-full bg-[#4a7c59]" /><span className="text-muted-foreground">Forest</span></div>
+            <div className="flex items-center gap-2"><div className="size-2.5 rounded-full bg-[#f97316]" /><span className="text-muted-foreground">Fire / Thermal</span></div>
+            <div className="flex items-center gap-2"><div className="size-2.5 rounded-full bg-[#eab308]" /><span className="text-muted-foreground">Mineral</span></div>
           </div>
         </motion.div>
       )}
 
-      {/* Compass (decorative) */}
+      {/* Compass — above query bar */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.3 }}
-        className="absolute bottom-4 right-4 z-[400] p-2 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-lg"
+        className="absolute bottom-[210px] right-3 z-[400] p-2 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-lg"
         title="North"
       >
         <Compass className="size-5 text-sage" />
