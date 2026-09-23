@@ -65,6 +65,10 @@ interface ConsoleState {
   /** Live jury dual Optical↔SAR comparison demo (KS-FL-07) */
   dualSarDemoOpen: boolean;
   setDualSarDemoOpen: (v: boolean) => void;
+  demoModeOpen: boolean;
+  setDemoModeOpen: (v: boolean) => void;
+  juryHelperOpen: boolean;
+  setJuryHelperOpen: (v: boolean) => void;
   toggleZenMode: () => void;
   submit: (text?: string, violationOverride?: PhysicsViolationType) => Promise<void>;
   loadMission: (id: MissionId) => Promise<void>;
@@ -140,6 +144,10 @@ export const useConsole = create<ConsoleState>((set, get) => ({
   setLeftRailTab: (t) => set({ leftRailTab: t }),
   dualSarDemoOpen: false,
   setDualSarDemoOpen: (v) => set({ dualSarDemoOpen: v }),
+  demoModeOpen: false,
+  setDemoModeOpen: (v) => set({ demoModeOpen: v }),
+  juryHelperOpen: false,
+  setJuryHelperOpen: (v) => set({ juryHelperOpen: v }),
   toggleZenMode: () => {
     const s = get();
     const isZen = !s.leftRailOpen && !s.rightPanelOpen;

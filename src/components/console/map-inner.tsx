@@ -318,11 +318,14 @@ export function MapInner() {
 
   return (
     <div className="relative h-full w-full">
+      {/* SAR scanline cinematic overlay — shown in all SAR sub-modes */}
+      {sar && <div className="sar-scanline-overlay pointer-events-none" aria-hidden="true" />}
       <MapContainer
         center={INDIA}
         zoom={5}
         minZoom={4}
         maxZoom={17}
+        zoomControl={false}
         className="h-full w-full"
         maxBounds={[
           [4, 64],
@@ -348,9 +351,6 @@ export function MapInner() {
 
       {/* Thermal overlay - shown in thermal mode */}
       {thermal && result && <ThermalOverlay />}
-
-      {/* SAR scanline cinematic overlay — shown in all SAR sub-modes */}
-      {sar && <div className="sar-scanline-overlay" aria-hidden="true" />}
 
       <Pane name="compare" style={{ zIndex: 350 }}>
         <TileLayer url={HILL} attribution={ATTR} />

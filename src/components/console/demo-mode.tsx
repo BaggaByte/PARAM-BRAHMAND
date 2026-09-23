@@ -19,11 +19,21 @@ export function DemoMode() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [narrationEnabled, setNarrationEnabled] = useState(true);
+  const demoModeOpen = useConsole((s) => s.demoModeOpen);
+  const setDemoModeOpen = useConsole((s) => s.setDemoModeOpen);
   const loadMission = useConsole((s) => s.loadMission);
   const submit = useConsole((s) => s.submit);
   const setQuery = useConsole((s) => s.setQuery);
   const result = useConsole((s) => s.result);
   const running = useConsole((s) => s.running);
+
+  useEffect(() => {
+    if (demoModeOpen && !isDemoActive) {
+      setIsDemoActive(true);
+      setCurrentStep(0);
+      setIsPaused(false);
+    }
+  }, [demoModeOpen, isDemoActive]);
 
   const DEMO_STEPS: DemoStep[] = [
     {
@@ -129,6 +139,7 @@ export function DemoMode() {
     setIsDemoActive(false);
     setCurrentStep(0);
     setIsPaused(false);
+    setDemoModeOpen(false);
     if (typeof window !== "undefined") {
       window.speechSynthesis.cancel();
     }
@@ -146,17 +157,6 @@ export function DemoMode() {
 
   return (
     <>
-      {/* Demo Control Button */}
-      {!isDemoActive && !result && !running && (
-        <Button
-          onClick={startDemo}
-          className="fixed top-1/2 -translate-y-1/2 left-4 z-[9000] shadow-xl bg-gradient-to-r from-sage to-emerald-600 text-white hover:from-sage/90 hover:to-emerald-600/90 gap-1.5 text-sm px-3 py-2 rounded-full"
-        >
-          <Play className="size-4" />
-          <span className="font-semibold hidden sm:inline">Live Demo</span>
-        </Button>
-      )}
-
       {/* Demo Overlay */}
       <AnimatePresence>
         {isDemoActive && (

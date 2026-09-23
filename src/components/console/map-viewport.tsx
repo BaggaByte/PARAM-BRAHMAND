@@ -234,27 +234,7 @@ export function MapViewport() {
         </div>
       )}
 
-      {/* Live Cursor Crosshairs — only when idle (no result) */}
-      {cursorCoords && !result && (
-        <div className="pointer-events-none absolute left-3 bottom-[220px] z-[400] flex items-center gap-2.5 rounded-md border border-border/80 bg-background/90 px-2.5 py-1 font-mono text-[11px] text-muted-foreground shadow-xs backdrop-blur-xs">
-          <Navigation className="size-3 text-sage shrink-0" />
-          <span className="text-foreground font-medium">
-            {cursorCoords.lat >= 0
-              ? `${cursorCoords.lat.toFixed(4)}°N`
-              : `${Math.abs(cursorCoords.lat).toFixed(4)}°S`}
-            ,{" "}
-            {cursorCoords.lng >= 0
-              ? `${cursorCoords.lng.toFixed(4)}°E`
-              : `${Math.abs(cursorCoords.lng).toFixed(4)}°W`}
-          </span>
-          <span className="text-muted-foreground/50">·</span>
-          <span>
-            ELEV: <strong className="text-sage">{cursorCoords.elev}m</strong> ASL
-          </span>
-          <span className="text-muted-foreground/50">·</span>
-          <span>SRTM-30</span>
-        </div>
-      )}
+
 
       {/* Interactive Bi-Temporal Divider Line directly on the Map */}
       {result?.swipeEnabled && (

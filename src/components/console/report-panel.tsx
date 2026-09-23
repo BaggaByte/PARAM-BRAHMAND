@@ -17,6 +17,7 @@ import {
   Activity,
   TrendingUp,
   BarChart3,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -109,45 +110,54 @@ export function ReportPanel() {
         onValueChange={(v) => setTab(v as RightTab)}
         className="flex min-h-0 flex-1 flex-col overflow-hidden"
       >
-        <div className="flex-shrink-0 border-b border-border px-3 pt-3 pb-2">
+        {/* Report Top Header */}
+        <div className="flex-shrink-0 border-b border-border/80 px-4 py-2.5 flex items-center justify-between bg-card/60 backdrop-blur-md">
           <div className="flex items-center gap-2">
-            <TabsList className="flex-1 h-9">
-              <TabsTrigger value="report" className="text-xs px-2">
-                <FileText className="mr-1.5 size-3.5" />
-                Brief
-              </TabsTrigger>
-              <TabsTrigger value="trace" className="text-xs px-2">
-                Trace ({result?.trace.length ?? liveTrace.length})
-              </TabsTrigger>
-              <TabsTrigger value="manifold" className="text-xs px-2">
-                <Activity className="mr-1 size-3.5" />
-                Manifold
-              </TabsTrigger>
-              <TabsTrigger value="telemetry" className="text-xs px-2">
-                <TrendingUp className="mr-1 size-3.5" />
-                Live Data
-              </TabsTrigger>
-              <TabsTrigger value="insights" className="text-xs px-2">
-                <BarChart3 className="mr-1 size-3.5" />
-                Insights
-              </TabsTrigger>
-              <TabsTrigger value="firewall" className="text-xs px-2">
-                Firewall
-              </TabsTrigger>
-            </TabsList>
-            {result && (
+            <span className="font-semibold text-xs tracking-wider uppercase text-sage">Analysis Report</span>
+            {result?.missionId && (
+              <Badge variant="outline" className="border-sage/40 text-[10px] text-sage font-mono py-0 px-1.5">
+                {result.missionId.toUpperCase()}
+              </Badge>
+            )}
+          </div>
+          {result && (
+            <div className="flex items-center gap-1.5 no-print">
               <Button
                 variant="outline"
-                size="icon-sm"
+                size="icon"
                 title="Export mission brief as PDF"
                 aria-label="Export brief PDF"
-                className="flex-shrink-0 no-print"
+                className="size-7 rounded-md"
                 onClick={() => window.print()}
               >
                 <Printer className="size-3.5" />
               </Button>
-            )}
-          </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                title="Close report"
+                aria-label="Close report"
+                className="size-7 rounded-md hover:bg-white/10"
+                onClick={() => {
+                  useConsole.getState().reset();
+                }}
+              >
+                <X className="size-4" />
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Tab Selection */}
+        <div className="flex-shrink-0 border-b border-border/60 px-2 py-1.5 bg-background/50">
+          <TabsList className="w-full h-8 grid grid-cols-6 p-0.5 bg-muted/60 text-[11px]">
+            <TabsTrigger value="report" className="px-1 text-[11px] h-7">Brief</TabsTrigger>
+            <TabsTrigger value="trace" className="px-1 text-[11px] h-7">Trace</TabsTrigger>
+            <TabsTrigger value="manifold" className="px-1 text-[11px] h-7">Manifold</TabsTrigger>
+            <TabsTrigger value="telemetry" className="px-1 text-[11px] h-7">Live</TabsTrigger>
+            <TabsTrigger value="insights" className="px-1 text-[11px] h-7">Insights</TabsTrigger>
+            <TabsTrigger value="firewall" className="px-1 text-[11px] h-7">Firewall</TabsTrigger>
+          </TabsList>
         </div>
         <div className="flex-1 min-h-0 overflow-y-auto">
           <TabsContent value="report" className="m-0 h-full">

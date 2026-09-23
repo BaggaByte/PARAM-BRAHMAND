@@ -2,47 +2,29 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lightbulb, Users, HelpCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useConsole } from "@/lib/store";
 import { TechExplainer } from "./tech-explainer";
 import { AgentCardsSimple } from "./agent-cards-simple";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 export function JuryHelperMenu() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const menuOpen = useConsole((s) => s.juryHelperOpen);
+  const setMenuOpen = useConsole((s) => s.setJuryHelperOpen);
   const [showTechExplainer, setShowTechExplainer] = useState(false);
   const [showAgentCards, setShowAgentCards] = useState(false);
 
   return (
     <>
-      {/* Main Menu Button */}
-      <AnimatePresence>
-        {!menuOpen && (
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            className="fixed bottom-6 right-6 z-[8500]"
-          >
-            <Button
-              onClick={() => setMenuOpen(true)}
-              className="size-14 rounded-full shadow-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 hover:scale-110 transition-all"
-              title="Jury Helper Menu"
-            >
-              <HelpCircle className="size-6" />
-            </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Expanded Menu */}
+      {/* Modal Dialog */}
       <AnimatePresence>
         {menuOpen && (
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            className="fixed bottom-6 right-6 z-[8500]"
-          >
-            <div className="rounded-2xl border-2 border-purple-500/40 bg-background/95 backdrop-blur-md p-4 shadow-2xl min-w-[280px]">
+          <div className="fixed inset-0 z-[8500] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-sm rounded-2xl border border-purple-500/40 bg-background/95 backdrop-blur-md p-5 shadow-2xl"
+            >
               {/* Header */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
@@ -56,7 +38,8 @@ export function JuryHelperMenu() {
                 </div>
                 <Button
                   variant="ghost"
-                  size="icon-sm"
+                  size="icon"
+                  className="rounded-full h-8 w-8"
                   onClick={() => setMenuOpen(false)}
                 >
                   <X className="size-4" />
@@ -108,8 +91,8 @@ export function JuryHelperMenu() {
               <div className="mt-4 pt-3 border-t border-border text-xs text-center text-muted-foreground">
                 Click anywhere to see detailed explanations
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 

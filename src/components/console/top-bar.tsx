@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Globe, Info, RotateCcw, ShieldAlert, Sparkles } from "lucide-react";
+import { Globe, HelpCircle, Info, Play, RotateCcw, ShieldAlert, Sparkles } from "lucide-react";
 
 import { LANGUAGES } from "@/lib/engine/languages";
 import { useConsole } from "@/lib/store";
@@ -34,6 +34,8 @@ export function TopBar() {
   const setAboutOpen = useConsole((s) => s.setAboutOpen);
   const physicsViolation = useConsole((s) => s.physicsViolation);
   const setPhysicsViolation = useConsole((s) => s.setPhysicsViolation);
+  const setDemoModeOpen = useConsole((s) => s.setDemoModeOpen);
+  const setJuryHelperOpen = useConsole((s) => s.setJuryHelperOpen);
   const lang = LANGUAGES.find((l) => l.code === language);
   const activeViolation = VIOLATION_OPTIONS.find((v) => v.value === physicsViolation);
 
@@ -49,10 +51,10 @@ export function TopBar() {
     <header className="flex h-16 shrink-0 items-center gap-4 bg-gradient-to-b from-background/80 to-transparent px-4 md:px-6">
       <button
         type="button"
-        className="flex min-w-0 items-center gap-3 text-left hover:scale-105 transition-transform"
+        className="flex shrink-0 items-center gap-3 text-left hover:scale-105 transition-transform"
         onClick={() => setAboutOpen(true)}
       >
-        <div className="rounded-full bg-primary/20 p-1.5 backdrop-blur-md border border-primary/30">
+        <div className="rounded-full bg-primary/20 p-1.5 backdrop-blur-md border border-primary/30 shrink-0">
           <Mark className="size-6 shrink-0 text-primary" />
         </div>
         <span className="min-w-0">
@@ -65,10 +67,34 @@ export function TopBar() {
         </span>
       </button>
 
-      <div className="ml-auto flex items-center gap-2 sm:gap-3">
+      <div className="ml-auto flex items-center gap-2 sm:gap-2.5 shrink-0">
         <DatasetInfo />
+
+        {/* Live Demo Trigger */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setDemoModeOpen(true)}
+          className="hidden sm:inline-flex items-center gap-1.5 rounded-full border-emerald-500/40 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300 font-medium transition-all shadow-sm shrink-0 whitespace-nowrap"
+          title="Interactive guided walkthrough of the system"
+        >
+          <Play className="size-3.5 fill-current" />
+          <span>Live Demo</span>
+        </Button>
+
+        {/* Jury & Judges Guide Trigger */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setJuryHelperOpen(true)}
+          className="hidden md:inline-flex items-center gap-1.5 rounded-full border-purple-500/40 bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 hover:text-purple-200 font-medium transition-all shadow-sm shrink-0 whitespace-nowrap"
+          title="Simple explanations for Jury & Judges"
+        >
+          <HelpCircle className="size-3.5" />
+          <span>Jury Guide</span>
+        </Button>
         
-        <span className="hidden items-center gap-1.5 rounded-full border border-white/10 bg-background/50 backdrop-blur-md px-3 py-1 font-mono text-xs text-primary lg:inline-flex shadow-sm">
+        <span className="hidden items-center gap-1.5 rounded-full border border-white/10 bg-background/50 backdrop-blur-md px-3 py-1 font-mono text-xs text-primary xl:inline-flex shadow-sm shrink-0 whitespace-nowrap">
           <span className="size-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(0,210,255,0.8)]" />
           <span>7-Layer OS</span>
           <span className="text-muted-foreground/40 px-1">|</span>
@@ -76,7 +102,7 @@ export function TopBar() {
         </span>
         
         {result && (
-          <span className="hidden items-center gap-2 font-mono text-xs text-muted-foreground md:flex">
+          <span className="hidden items-center gap-2 font-mono text-xs text-muted-foreground md:flex shrink-0 whitespace-nowrap">
             <span className="text-primary font-bold">{result.latencyMs}ms</span>
             <span aria-hidden="true">·</span>
             <span className={result.firewall.passed ? "text-green-400" : "text-destructive"}>

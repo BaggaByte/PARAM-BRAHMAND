@@ -34,6 +34,7 @@ export function QueryBar() {
   const setQuery = useConsole((s) => s.setQuery);
   const submit = useConsole((s) => s.submit);
   const running = useConsole((s) => s.running);
+  const result = useConsole((s) => s.result);
   const language = useConsole((s) => s.language);
   const inputRef = useRef<HTMLInputElement>(null);
   const [listening, setListening] = useState(false);
@@ -98,7 +99,7 @@ export function QueryBar() {
     bn: "বন্যার জল কি হাইওয়ে পর্যন্ত পৌঁছেছে?",
     ta: "வெள்ள நீர் நெடுஞ்சாலையை அடைந்துவிட்டதா?",
     te: "వరద నీరు హైవే వరకు చేరిందా?",
-    en: "Query satellite telemetry (e.g. 'Map flood water under canopy in Kaziranga')",
+    en: "Query satellite telemetry (Kaziranga, Joshimath, Chambal...)",
   };
   const hint = hints[language] ?? hints.en;
 
@@ -124,27 +125,29 @@ export function QueryBar() {
       )}
 
       <form
-        className="flex items-center gap-3 bg-card/40 p-2 rounded-3xl border border-white/10 shadow-inner backdrop-blur-md"
+        className="flex items-center gap-2 md:gap-3 bg-card/40 p-1.5 md:p-2 rounded-3xl border border-white/10 shadow-inner backdrop-blur-md"
         onSubmit={(e) => {
           e.preventDefault();
           void submit();
         }}
       >
-        <div className="relative flex-1">
+        <div className="relative flex-1 min-w-0">
           <Input
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={hint}
+            placeholder={result ? "Ask follow-up query or enter location..." : hint}
             aria-label="Satellite query"
             disabled={running}
-            className="h-12 md:h-14 w-full bg-transparent border-none px-4 md:px-6 font-sans text-base md:text-lg text-foreground placeholder:text-muted-foreground/60 focus-visible:ring-0 shadow-none"
+            className="h-11 md:h-13 w-full bg-transparent border-none px-4 md:px-5 font-sans text-sm md:text-base text-foreground placeholder:text-muted-foreground/60 focus-visible:ring-0 shadow-none truncate"
           />
-          <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 font-mono text-xs text-muted-foreground/40 hidden sm:inline">
-            Press / to search
-          </span>
         </div>
-        <div className="flex shrink-0 items-center gap-2 pr-2">
+        <div className="flex shrink-0 items-center gap-1.5 md:gap-2 pr-1 md:pr-2">
+          {!query && (
+            <kbd className="hidden xl:inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2 py-0.5 font-mono text-[11px] text-muted-foreground/60 select-none">
+              Press <span className="font-semibold text-foreground/80">/</span>
+            </kbd>
+          )}
           <Button
             type="button"
             variant={listening ? "default" : "ghost"}
@@ -152,47 +155,49 @@ export function QueryBar() {
             onClick={toggleMic}
             aria-label={listening ? "Stop listening" : "Voice query"}
             title={listening ? "Stop listening" : "Vernacular voice query (AI4Bharat VIVA)"}
-            className={`rounded-full size-10 md:size-12 transition-all ${
+            className={`rounded-full size-9 md:size-11 transition-all ${
               listening 
                 ? "bg-sage text-background hover:bg-sage/90 ring-4 ring-sage/30 animate-pulse" 
                 : "text-muted-foreground hover:bg-white/10 hover:text-foreground"
             }`}
           >
-            {listening ? <MicOff className="size-5" /> : <Mic className="size-5" />}
+            {listening ? <MicOff className="size-4 md:size-5" /> : <Mic className="size-4 md:size-5" />}
           </Button>
           <Button
             type="submit"
             size="icon"
             disabled={running || !query.trim()}
             aria-label="Run query"
-            className="rounded-full size-10 md:size-12 bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/25 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
+            className="rounded-full size-9 md:size-11 bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/25 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
           >
-            <Send className="size-5" />
+            <Send className="size-4 md:size-5" />
           </Button>
         </div>
       </form>
 
-      {/* Vernacular Quick Suggestion Chips */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pt-0.5 scrollbar-none">
-        <span className="flex items-center gap-1 font-mono text-[10px] text-muted-foreground shrink-0">
-          <Sparkles className="size-2.5 text-sage" />
-          <span>Quick:</span>
-        </span>
-        {suggestions.map((s, idx) => (
-          <button
-            key={idx}
-            type="button"
-            onClick={() => {
-              setQuery(s.text);
-              void submit(s.text);
-            }}
-            disabled={running}
-            className="truncate rounded-xs border border-border/80 bg-secondary/50 px-2 py-0.5 font-sans text-[11px] text-muted-foreground hover:border-sage/50 hover:bg-secondary hover:text-foreground transition-colors shrink-0 max-w-[200px]"
-          >
-            {s.text}
-          </button>
-        ))}
-      </div>
+      {/* Vernacular Quick Suggestion Chips — only shown when idle */}
+      {!result && (
+        <div className="flex items-center gap-1.5 overflow-x-auto pt-0.5 scrollbar-none">
+          <span className="flex items-center gap-1 font-mono text-[10px] text-muted-foreground shrink-0">
+            <Sparkles className="size-2.5 text-sage" />
+            <span>Quick:</span>
+          </span>
+          {suggestions.map((s, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => {
+                setQuery(s.text);
+                void submit(s.text);
+              }}
+              disabled={running}
+              className="truncate rounded-xs border border-border/80 bg-secondary/50 px-2 py-0.5 font-sans text-[11px] text-muted-foreground hover:border-sage/50 hover:bg-secondary hover:text-foreground transition-colors shrink-0 max-w-[200px]"
+            >
+              {s.text}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

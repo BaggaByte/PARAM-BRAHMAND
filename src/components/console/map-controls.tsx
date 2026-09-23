@@ -6,11 +6,13 @@ import {
   Grid3x3,
   Eye,
   Target,
-  Flame
+  Flame,
+  Layers,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useConsole } from "@/lib/store";
+import { MISSIONS } from "@/lib/engine/missions";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,8 +43,7 @@ export function MapControls() {
     if (result) {
       const mission = result.missionId;
       if (mission) {
-        const { MISSIONS } = require("@/lib/engine/missions");
-        const m = MISSIONS.find((ms: any) => ms.id === mission);
+        const m = MISSIONS.find((ms) => ms.id === mission);
         if (m) {
           flyToPosition(m.center, m.zoom);
           return;
@@ -126,9 +127,9 @@ export function MapControls() {
         </div>
       )}
 
-      {/* When result shown: only a minimal zoom bar on right */}
+      {/* When result shown: minimal zoom bar on left side so it never collides with report panel */}
       {result && (
-        <div className="absolute top-[68px] right-4 z-[400] flex flex-col gap-1 rounded-lg border border-border/60 bg-background/80 backdrop-blur-sm shadow-md overflow-hidden">
+        <div className="absolute top-[68px] left-4 z-[400] flex flex-col gap-1 rounded-lg border border-border/60 bg-background/80 backdrop-blur-sm shadow-md overflow-hidden">
           <Button variant="ghost" size="icon" onClick={handleZoomIn} disabled={zoom >= 17} className="rounded-none h-8 w-8" title="Zoom In"><ZoomIn className="size-3.5" /></Button>
           <div className="px-1 py-0.5 text-center border-y border-border/40"><span className="text-[10px] font-mono text-sage">{zoom}</span></div>
           <Button variant="ghost" size="icon" onClick={handleZoomOut} disabled={zoom <= 4} className="rounded-none h-8 w-8" title="Zoom Out"><ZoomOut className="size-3.5" /></Button>

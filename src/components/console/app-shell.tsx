@@ -78,7 +78,7 @@ export function AppShell() {
 
         {/* Results Slide-over Panel */}
         <div
-          className={`absolute right-4 top-20 z-20 w-[min(420px,calc(100vw-2rem))] bottom-44 max-h-full transition-transform duration-500 ease-out ${
+          className={`absolute right-4 top-20 z-20 w-[min(460px,calc(100vw-2rem))] bottom-4 max-h-full transition-transform duration-500 ease-out ${
             result && !running ? "translate-x-0 opacity-100 pointer-events-auto" : "translate-x-full opacity-0 pointer-events-none"
           }`}
         >
@@ -88,11 +88,19 @@ export function AppShell() {
         </div>
 
         {/* Floating Query Command Center at Bottom */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-40 w-full max-w-3xl px-4 pointer-events-none">
+        <div
+          className={`absolute bottom-4 z-40 transition-all duration-300 pointer-events-none ${
+            result && !running
+              ? "left-4 w-[min(540px,calc(100vw-490px))]"
+              : "left-1/2 -translate-x-1/2 w-full max-w-3xl px-4"
+          }`}
+        >
           <div className="pointer-events-auto rounded-3xl border border-white/10 bg-background/70 p-3 backdrop-blur-2xl shadow-2xl">
-            <div className="mb-2">
-              <MissionDock />
-            </div>
+            {!result && (
+              <div className="mb-2">
+                <MissionDock />
+              </div>
+            )}
             <QueryBar />
           </div>
         </div>
